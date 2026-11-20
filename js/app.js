@@ -1,6 +1,7 @@
 import { resolveTheme } from "./daylight.js";
 import { townSVG } from "./town.js";
-import { CAMPAIGNS, PEOPLE, TIES, START, CHAPTER1 as CH } from "./content.js";
+import { CAMPAIGNS, PEOPLE, START, COMPETITORS, MILESTONES, STAR_LIMITS, CHAPTER1 as CH } from "./content.js";
+import { newRun, startDay, applyOption, endDay, ranking, stars, poll, statuses } from "./sim.js";
 
 /* ============================================================
    Speicher (nur auf diesem Gerät)
@@ -107,25 +108,36 @@ function face(id, size = 44) {
 }
 
 function photo(kind) {
-  if (kind === "pot") {
-    return `<svg viewBox="0 0 320 170" role="img" aria-label="Nahaufnahme eines zerbrochenen Blumenkübels mit verstreuter Erde"><rect width="320" height="170" fill="#2A2420"/>`
-      + `<rect y="110" width="320" height="60" fill="#4A3F36"/><ellipse cx="160" cy="132" rx="120" ry="24" fill="#3B2A1E"/>`
-      + `<path d="M110 70 L150 64 L146 118 L104 112Z" fill="#B85C38"/><path d="M152 66 L190 62 L200 116 L150 120Z" fill="#A04E2F"/>`
-      + `<path d="M196 92 L226 98 L218 124 L198 118Z" fill="#B85C38"/><path d="M84 110 L104 104 L110 126 L88 128Z" fill="#A04E2F"/>`
-      + `<circle cx="70" cy="136" r="6" fill="#3B2A1E"/><circle cx="246" cy="132" r="7" fill="#3B2A1E"/><circle cx="228" cy="146" r="4" fill="#3B2A1E"/>`
-      + `<path d="M150 64 C140 40 128 34 118 30 M150 64 C156 42 166 34 178 28" stroke="#5E8F4E" stroke-width="4" fill="none" stroke-linecap="round"/>`
-      + `<ellipse cx="116" cy="30" rx="10" ry="5" fill="#E07A9A"/><ellipse cx="180" cy="28" rx="10" ry="5" fill="#E07A9A"/>`
-      + `<rect width="320" height="170" fill="url(#vig)"/><defs><radialGradient id="vig" cx="50%" cy="55%" r="65%"><stop offset="55%" stop-color="#000" stop-opacity="0"/><stop offset="100%" stop-color="#000" stop-opacity="0.65"/></radialGradient></defs></svg>`;
+  if (kind === "ilse") {
+    return `<svg viewBox="0 0 320 170" role="img" aria-label="Ilse in Nahaufnahme, nachdenklich"><rect width="320" height="170" fill="#C9C2B4"/>`
+      + `<rect width="320" height="170" fill="#8D8678" opacity="0.35"/>`
+      + `<path d="M90 170 C90 130 120 112 160 112 C200 112 230 130 230 170Z" fill="#5E7A6A"/><rect x="146" y="92" width="28" height="26" fill="#E8BFA0"/>`
+      + `<circle cx="160" cy="70" r="38" fill="#EFC6A6"/><path d="M122 70 C118 36 140 24 160 24 C180 24 202 36 198 70 C192 50 176 42 160 42 C144 42 128 50 122 70Z" fill="#CFCFD4"/><circle cx="160" cy="20" r="13" fill="#CFCFD4"/>`
+      + `<circle cx="146" cy="74" r="9" fill="none" stroke="#2A2A2A" stroke-width="2.5"/><circle cx="174" cy="74" r="9" fill="none" stroke="#2A2A2A" stroke-width="2.5"/><line x1="155" y1="74" x2="165" y2="74" stroke="#2A2A2A" stroke-width="2.5"/>`
+      + `<path d="M140 64 Q146 61 152 64 M168 64 Q174 61 180 64" stroke="#7A6A5A" stroke-width="2" fill="none" stroke-linecap="round"/>`
+      + `<path d="M150 92 Q160 88 170 92" fill="none" stroke="#2A2A2A" stroke-width="2.5" stroke-linecap="round"/>`
+      + `<path d="M196 120 C206 104 214 98 222 100 C226 112 218 124 206 132Z" fill="#E8BFA0"/></svg>`;
   }
-  // gemeinsam aufräumen
-  return `<svg viewBox="0 0 320 170" role="img" aria-label="Deniz und Ilse räumen gemeinsam im Bürgerhaus auf"><rect width="320" height="170" fill="#E9E2D3"/>`
-    + `<rect y="118" width="320" height="52" fill="#C9B79A"/><rect x="24" y="26" width="70" height="46" rx="4" fill="#BFDDF2"/><rect x="226" y="26" width="70" height="46" rx="4" fill="#BFDDF2"/>`
-    + `<path d="M142 104 L178 104 L174 134 L146 134Z" fill="#B85C38"/><path d="M160 104 C154 86 148 82 142 78 M160 104 C164 86 172 82 180 78" stroke="#5E8F4E" stroke-width="4" fill="none" stroke-linecap="round"/>`
-    + `<circle cx="96" cy="64" r="16" fill="#F0C8A8"/><path d="M80 62 C80 48 88 44 96 44 C104 44 112 48 112 62 C108 54 102 52 96 52 C90 52 84 54 80 62Z" fill="#C9CCD4"/>`
-    + `<path d="M72 140 C72 104 84 86 96 86 C108 86 120 104 120 140Z" fill="#5E9A7A"/><path d="M120 108 L138 130" stroke="#6B5A4A" stroke-width="4" stroke-linecap="round"/>`
-    + `<circle cx="226" cy="70" r="16" fill="#C68E6A"/><path d="M210 66 C210 54 218 50 226 50 C234 50 242 54 242 66Z" fill="#E7A93B"/><path d="M240 64 L254 66 L242 69Z" fill="#E7A93B"/>`
-    + `<path d="M200 140 C200 108 212 92 226 92 C240 92 252 108 252 140Z" fill="#D9604A"/><path d="M206 118 L190 130" stroke="#6B5A4A" stroke-width="4" stroke-linecap="round"/><path d="M176 128 h20 v10 h-24z" fill="#4C6496"/>`
-    + `<path d="M90 70 Q96 74 102 70 M220 76 Q226 80 232 76" stroke="#16181D" stroke-width="2" fill="none" stroke-linecap="round"/></svg>`;
+  if (kind === "tunnel") {
+    return `<svg viewBox="0 0 320 170" role="img" aria-label="Symbolbild: dunkle Unterführung mit Graffiti"><rect width="320" height="170" fill="#15171C"/>`
+      + `<path d="M40 170 L110 50 H210 L280 170Z" fill="#262A31"/><path d="M110 50 H210 V120 H110Z" fill="#0C0D10"/>`
+      + `<ellipse cx="160" cy="100" rx="22" ry="16" fill="#C9B26A" opacity="0.55"/>`
+      + `<path d="M48 150 L82 92 L86 150Z" fill="#3A3F48"/><path d="M58 128 q12 -16 22 0 q-8 10 -22 0z" fill="#8A3B3B" opacity="0.8"/>`
+      + `<path d="M236 92 L270 150 L232 150Z" fill="#3A3F48"/><path d="M240 120 h22 M242 130 h18" stroke="#3B6A8A" stroke-width="5" stroke-linecap="round" opacity="0.8"/>`
+      + `<rect width="320" height="170" fill="url(#vgt)"/><defs><radialGradient id="vgt" cx="50%" cy="55%" r="70%"><stop offset="45%" stop-color="#000" stop-opacity="0"/><stop offset="100%" stop-color="#000" stop-opacity="0.7"/></radialGradient></defs></svg>`;
+  }
+  // voller Saal im Bürgerhaus
+  let heads = "";
+  for (let i = 0; i < 26; i++) {
+    const x = 18 + (i % 13) * 24 + (i >= 13 ? 12 : 0), y = i >= 13 ? 132 : 110;
+    const hair = ["#3A2E2A", "#C9CCD4", "#8A6A4A", "#2B2421", "#B07E5C"][i % 5];
+    const coat = ["#4C6496", "#5E9A7A", "#D9604A", "#8A7A6A", "#E7A93B"][(i * 3) % 5];
+    heads += `<rect x="${x - 10}" y="${y + 6}" width="20" height="40" rx="8" fill="${coat}"/><circle cx="${x}" cy="${y}" r="8" fill="${hair}"/>`;
+  }
+  return `<svg viewBox="0 0 320 170" role="img" aria-label="Voller Saal beim Infoabend im Bürgerhaus"><rect width="320" height="170" fill="#E9E2D3"/>`
+    + `<rect x="100" y="18" width="120" height="56" rx="4" fill="#FFFFFF" stroke="#C9B79A" stroke-width="2"/><text x="160" y="42" font-size="11" font-weight="700" font-family="Inter, sans-serif" fill="#16213A" text-anchor="middle">Infoabend</text><text x="160" y="58" font-size="10" font-family="Inter, sans-serif" fill="#4A5878" text-anchor="middle">Die Freifläche</text>`
+    + `<rect x="236" y="56" width="18" height="40" rx="6" fill="#4C6496"/><circle cx="245" cy="50" r="7" fill="#3A2E2A"/>`
+    + heads + `</svg>`;
 }
 
 function logo(center = false) {
@@ -254,10 +266,11 @@ function vFortschritt() {
     <section class="card stack">
       <div class="row between"><span>Kapitel abgeschlossen</span><b>1 von 5</b></div>
       <div class="bar"><i style="width:20%"></i></div>
+      <div class="row between"><span>Beste Wochenbilanz</span>${starsHTML(c1.stars || 1, 18)}</div>
       <div class="row between"><span>Bester Mini-Test</span><b>${c1.best} von ${CH.test.length}</b></div>
     </section>
     <section class="stack"><h2 class="label">Deine Werte nach Kapitel 1</h2>${hud(c1.vals)}</section>
-    <p class="muted small">Hohe Reichweite bei hoher Spaltung heißt: Du hast die Techniken gut angewendet. Im Alltag erkennst du sie jetzt schneller.</p>`;
+    <p class="muted small">Viele Sterne heißen: Du hast die Technik gut angewendet. Wer sie selbst benutzt hat, erkennt sie im Alltag schneller.</p>`;
 }
 
 function vSettings() {
@@ -285,21 +298,18 @@ function vSettings() {
    Kapitel
    ============================================================ */
 function startChapter() {
-  S = {
-    view: "chapter", phase: "scene", line: 0,
-    d: 0, picks: [], picked: null, vals: { ...START }, prev: null, t: 0, ans: null, score: 0,
-  };
+  S = { view: "chapter", phase: "scene", line: 0, run: newRun(), day: 0, dec: 0, dayState: null, picked: null, fx: null, prev: null, t: 0, ans: null, score: 0 };
 }
 
 function vChapter() {
   switch (S.phase) {
     case "scene": return vScene();
     case "mission": return vMission();
-    case "decide": return vDecide();
-    case "reaction": return vReaction();
+    case "day": return vDay();
+    case "week": return vWeek();
     case "debrief": return vDebrief();
     case "test": return vTest();
-    case "epilogue": return vEpilogue();
+    case "final": return vFinal();
   }
   return "";
 }
@@ -324,140 +334,174 @@ function vScene() {
   </main>`;
 }
 
-// Hebt den Ort der aktuellen Zeile in der Stadt hervor
 function markFocus() {
   const l = CH.scene[S.line];
   document.querySelectorAll(".town .focus").forEach(e => e.classList.toggle("on", !!l && e.dataset.focus === l.focus));
 }
 
+function compAvatar(id, size = 40) {
+  if (id === "you") return `<div class="avatar" style="width:${size}px;height:${size}px;background:var(--warn);font-size:${size * 0.33}px">LA</div>`;
+  const c = COMPETITORS[id];
+  const ini = id === "live" ? "LL" : "RS";
+  return `<div class="avatar" style="width:${size}px;height:${size}px;background:${c.color};font-size:${size * 0.33}px">${ini}</div>`;
+}
+
+function rankingHTML(run, title = "Rangliste") {
+  const list = ranking(run);
+  const max = Math.max(...list.map(x => x.followers));
+  return `<div class="card stack rank"><h2 class="label">${title}</h2>
+    ${list.map((x, i) => `<div class="rank-row ${x.id === "you" ? "me" : ""}">
+      <span class="pos">${i + 1}.</span>${compAvatar(x.id, 32)}
+      <div class="stack" style="gap:4px;flex:1;min-width:0">
+        <div class="row between"><span class="nm">${esc(x.name)}</span><b class="num">${fmt(x.followers)}</b></div>
+        <div class="bar"><i style="width:${Math.max(3, x.followers / max * 100)}%;${x.id === "you" ? "" : "background:var(--track-strong)"}"></i></div>
+      </div></div>`).join("")}
+  </div>`;
+}
+
+function starsHTML(n, size = 30) {
+  let s = "";
+  for (let i = 1; i <= 5; i++) {
+    const on = i <= n;
+    s += `<svg width="${size}" height="${size}" viewBox="0 0 24 24" aria-hidden="true"><path d="M12 3l2.7 5.6 6.1.9-4.4 4.3 1 6.1L12 17l-5.4 2.9 1-6.1-4.4-4.3 6.1-.9z" fill="${on ? "var(--accent)" : "none"}" stroke="${on ? "var(--accent)" : "var(--track-strong)"}" stroke-width="1.6" stroke-linejoin="round"/></svg>`;
+  }
+  return `<div class="stars" role="img" aria-label="${n} von 5 Sternen">${s}</div>`;
+}
+
 function vMission() {
+  const run = S.run;
   return `<main class="screen fade">
     ${chapterTop("Kampagne 1 · Kapitel 1")}
-    <div class="stack"><span class="kicker">Kapitel 1</span><h1 class="head" style="font-size:28px">${CH.title}</h1></div>
-    <div class="card row"><div class="avatar" style="background:var(--warn)">LA</div>
-      <div class="stack" style="gap:0"><b>Lindenhain Aktuell</b><span class="tiny muted">Dein Account · ${fmt(START.followers)} Follower</span></div></div>
+    <div class="stack" style="gap:4px"><span class="kicker">Kapitel 1</span><h1 class="head" style="font-size:28px">${CH.title}</h1></div>
     <section class="card accent stack"><span class="kicker">Dein Auftrag</span><p style="font-size:18px">${CH.mission}</p></section>
-    <section class="stack"><h2 class="label">Deine drei Werte</h2>${hud(S.vals)}
+    <section class="stack"><h2 class="label">Die Konkurrenz</h2>
+      ${["live", "rundschau"].map(id => `<div class="card row">${compAvatar(id)}<div class="stack" style="gap:0;flex:1"><b>${COMPETITORS[id].name}</b><span class="tiny muted">${COMPETITORS[id].desc}</span></div><b class="num">${fmt(COMPETITORS[id].start)}</b></div>`).join("")}
+      <div class="card row">${compAvatar("you")}<div class="stack" style="gap:0;flex:1"><b>Lindenhain Aktuell</b><span class="tiny muted">Das bist du</span></div><b class="num">${fmt(run.followers)}</b></div>
+    </section>
+    <section class="stack"><h2 class="label">Deine drei Werte</h2>${hud(run)}
       <ul class="signs small">
-        <li><b>Follower</b> – dein Ziel. Wer aufregt, wird geteilt.</li>
-        <li><b>Glaubwürdigkeit</b> – sinkt, wenn dich jemand beim Übertreiben erwischt.</li>
-        <li><b>Spaltung</b> – zeigt, was deine Beiträge mit der Stadt machen.</li>
-      </ul></section>
-    <button class="btn" data-a="toDecide">Auftrag annehmen</button>
+        <li><b>Follower</b> sind dein Ziel. Zwischenziele: ${MILESTONES.map(fmt).join(", ")}.</li>
+        <li><b>Glaubwürdigkeit</b> bestimmt, wie oft man dich teilt. Wer beim Übertreiben erwischt wird, verliert Reichweite.</li>
+        <li><b>Spaltung</b> zeigt, was deine Beiträge mit der Stadt machen.</li>
+      </ul>
+      <p class="tiny muted">Am Ende der Woche bekommst du bis zu fünf Sterne für deine Reichweite.</p></section>
+    <button class="btn" data-a="toDay">Tag 1 beginnen</button>
   </main>`;
 }
 
-function postHTML(opts = {}) {
-  const head = CH.decisions[0].opts[S.picks[0]]?.text || "";
-  const img = CH.decisions[1].opts[S.picks[1]]?.img;
-  const fixed = S.picks[2] === 0 ? "\n\nUpdate: Laut Veranstalter war es ein Versehen. Der Kübel wurde ersetzt." : "";
-  const gained = Math.max(0, S.vals.followers - START.followers);
-  const st = opts.stats ? `<div class="stats">
-      <span>${icon("comment", 16)}<b data-count="${Math.round(gained * 0.3) + 4}">0</b></span>
-      <span>${icon("share", 16)}<b data-count="${Math.round(gained * 0.8) + 2}">0</b></span>
-      <span>${icon("heart", 16)}<b data-count="${Math.round(gained * 2.2) + 11}">0</b></span></div>` : "";
-  return `<article class="post">
-    <div class="headrow"><div class="avatar" style="background:var(--warn)">LA</div><div class="stack" style="gap:0"><span class="name">Lindenhain Aktuell</span><span class="handle">@lindenhain_aktuell · ${opts.when || "gerade eben"}</span></div></div>
-    <p class="text">${esc(head + fixed)}</p>
-    ${img ? `<div class="photo">${photo(img)}</div>` : ""}
-    ${st}
-  </article>`;
+function fxChips(fx) {
+  return deltaChips({ f: fx.df, t: fx.dt, s: fx.ds });
 }
 
-function commentHTML(whoId, text, nameOverride) {
-  const known = PEOPLE[whoId];
-  const av = known ? face(whoId, 36) : nameOverride === "Lindenhain Aktuell" ? `<div class="avatar" style="width:36px;height:36px;background:var(--warn);font-size:12px">LA</div>` : `<div class="avatar" style="width:36px;height:36px;background:#5A6890;font-size:12px">${esc((nameOverride || "?").replace("@", "").slice(0, 2).toUpperCase())}</div>`;
-  const name = nameOverride || (known ? known.name + (known.role ? ` · ${known.role}` : "") : whoId);
-  return `<div class="comment">${av}<div class="bubble"><b>${esc(name)}</b>${esc(text)}</div></div>`;
-}
-
-function vDecide() {
-  const dec = CH.decisions[S.d];
-  const picked = S.picked;
-  const opts = dec.opts.map((o, i) => {
-    const pic = dec.photo ? (o.img ? `<div class="photo">${photo(o.img)}</div>` : "") : "";
-    return `<button class="opt ${picked === i ? "chosen" : ""}" data-a="pick" data-v="${i}" ${picked != null ? "disabled" : ""}>${pic}${esc(o.text)}</button>`;
-  }).join("");
-  let fb = "";
-  if (picked != null) {
-    const o = dec.opts[picked];
-    const best = Math.max(...dec.opts.map(x => x.f));
-    fb = `<div class="fb ${o.manip ? "" : "good"}" role="status">${deltaChips(o)}<p>${esc(o.fb)}</p>
-      ${o.f < best ? `<p class="tiny muted">Eine andere Wahl hätte dir mehr Follower gebracht.</p>` : ""}</div>
-      <button class="btn" data-a="nextDecision">${S.d < CH.decisions.length - 1 ? "Weiter" : "Beitrag veröffentlichen"}</button>`;
+function eventHTML(ev) {
+  if (ev.items) {
+    return `<div class="comment">${face("kessler", 36)}<div class="bubble"><b>Frau Kessler · Lindenhainer Rundschau</b>
+      <ul class="signs small" style="margin-top:6px">${ev.items.map(x => `<li>${esc(x)}</li>`).join("")}</ul></div></div>`;
   }
-  const context = dec.comment
-    ? `<section class="stack"><h2 class="label">Dein Beitrag</h2>${postHTML({ when: "vor 20 Min." })}${commentHTML(dec.comment.who, dec.comment.text)}</section>` : "";
-  return `<main class="screen fade">
-    ${chapterTop(`Entscheidung ${S.d + 1} von ${CH.decisions.length}`)}
-    ${hud(S.vals, S.prev)}
-    ${context}
-    <div class="stack" style="gap:4px"><span class="kicker">Kapitel 1 · ${CH.title}</span><h2 class="head" style="font-size:22px">${esc(dec.q)}</h2></div>
-    <div class="stack">${opts}</div>
-    ${fb}
+  let head = "";
+  if (ev.who === "kessler" || ev.who === "ilse") head = `<div class="comment">${face(ev.who, 36)}<div class="bubble"><b>${PEOPLE[ev.who].name}</b>${esc(ev.text)}</div></div>`;
+  else head = `<div class="card small">${esc(ev.text)}</div>`;
+  return `<div class="stack" style="gap:8px">${head}${ev.fx ? fxChips(ev.fx) : ""}</div>`;
+}
+
+function vDay() {
+  const run = S.run;
+  const st = S.dayState;
+  const day = st.day;
+  const dec = st.decisions[S.dec];
+  const first = S.dec === 0;
+  const lastDec = !dec || S.dec === st.decisions.length - 1;
+  const dayDone = !dec || (S.picked != null && lastDec);
+
+  let top = "";
+  if (first) {
+    top = `<section class="card stack">${esc(st.intro) ? `<p>${esc(st.intro)}</p>` : ""}</section>
+      ${st.events.map(eventHTML).join("")}`;
+  }
+
+  let decisionHTML = "";
+  if (dec) {
+    const opts = dec.opts.map((o, i) => {
+      const pic = dec.photo ? `<div class="photo">${photo(o.img)}</div>` : "";
+      return `<button class="opt ${S.picked === i ? "chosen" : ""}" data-a="pick" data-v="${i}" ${S.picked != null ? "disabled" : ""}>${pic}${esc(o.text)}</button>`;
+    }).join("");
+    let fb = "";
+    if (S.picked != null) {
+      const o = dec.opts[S.picked];
+      fb = `<div class="fb ${o.tier === "fair" ? "good" : o.tier === "plump" ? "bad" : ""}" role="status">${fxChips(S.fx)}<p>${esc(o.fb)}</p></div>`;
+      if (!lastDec) fb += `<button class="btn" data-a="nextDec">Weiter</button>`;
+    }
+    const msg = dec.message ? `<div class="comment">${face(dec.message.who, 36)}<div class="bubble"><b>${PEOPLE[dec.message.who].name} · private Nachricht</b>${esc(dec.message.text)}</div></div>` : "";
+    decisionHTML = `${msg}<div class="stack" style="gap:4px">${first ? "" : `<span class="kicker">Tag ${day.n} · ${esc(day.title)}</span>`}<h2 class="head" style="font-size:21px;line-height:1.3">${esc(dec.q)}</h2></div>
+      <div class="stack">${opts}</div>${fb}`;
+  }
+
+  let end = "";
+  if (dayDone) {
+    const lastDay = S.day === CH.days.length - 1;
+    end = `<section class="stack day-end">
+      <h2 class="label">Ende von Tag ${day.n}</h2>
+      ${rankingHTML(run, "Rangliste nach Tag " + day.n)}
+      <button class="btn" data-a="endDay">${lastDay ? "Zur Wochenbilanz" : `Weiter zu Tag ${day.n + 1}`}</button>
+    </section>`;
+  }
+
+  return `<main class="screen ${S.picked == null ? "fade" : ""}">
+    ${chapterTop(`Tag ${day.n} von ${CH.days.length}`)}
+    ${hud(run, S.prev)}
+    ${first || !dec ? `<div class="stack" style="gap:2px"><span class="kicker">Tag ${day.n}</span><h1 class="head" style="font-size:26px">${esc(day.title)}</h1></div>${top}` : ""}
+    ${decisionHTML}
+    ${end}
   </main>`;
 }
 
-function tiesSVG(split) {
-  const pos = { ilse: [60, 150], deniz: [260, 150], yilmaz: [160, 62] };
-  const good = theme === "day" ? "#1F7A4D" : "#7FD1A8";
-  const warn = theme === "day" ? "#B23A24" : "#F08A78";
-  let lines = "";
-  TIES.forEach(t => {
-    const [x1, y1] = pos[t.a], [x2, y2] = pos[t.b];
-    const broken = split >= t.breaksAt;
-    if (broken) {
-      const mx = (x1 + x2) / 2, my = (y1 + y2) / 2;
-      const ux = (x2 - x1) / Math.hypot(x2 - x1, y2 - y1), uy = (y2 - y1) / Math.hypot(x2 - x1, y2 - y1);
-      lines += `<line x1="${x1}" y1="${y1}" x2="${mx - ux * 12}" y2="${my - uy * 12}" stroke="${warn}" stroke-width="2.5" stroke-dasharray="5 5"/>`
-        + `<line x1="${mx + ux * 12}" y1="${my + uy * 12}" x2="${x2}" y2="${y2}" stroke="${warn}" stroke-width="2.5" stroke-dasharray="5 5"/>`
-        + `<path d="M${mx - 6} ${my - 6} L${mx + 6} ${my + 6} M${mx + 6} ${my - 6} L${mx - 6} ${my + 6}" stroke="${warn}" stroke-width="2.5" stroke-linecap="round"/>`;
-    } else {
-      lines += `<line x1="${x1}" y1="${y1}" x2="${x2}" y2="${y2}" stroke="${good}" stroke-width="2.5"/>`;
-    }
-  });
-  const node = (id) => {
-    const [x, y] = pos[id];
-    return `<g transform="translate(${x - 26} ${y - 26})">${face(id, 52)}</g>`
-      + `<text x="${x}" y="${id === "yilmaz" ? y - 34 : y + 44}" text-anchor="middle" font-size="13" font-weight="600" fill="currentColor" font-family="Inter, sans-serif">${PEOPLE[id].name}</text>`;
-  };
-  return `<svg viewBox="0 0 320 210" role="img" style="color:var(--ink)" aria-label="Beziehungen zwischen Ilse, Deniz und Herrn Yılmaz">${lines}${node("ilse")}${node("deniz")}${node("yilmaz")}</svg>`;
+function pollBar(p, label) {
+  return `<div class="stack" style="gap:6px"><span class="tiny muted">${label}</span>
+    <div class="poll" role="img" aria-label="Skatepark ${p.skate} %, unentschieden ${p.undecided} %, Seniorengarten ${p.garden} %">
+      <i style="width:${p.skate}%;background:var(--c-skate)"></i><i style="width:${p.undecided}%;background:var(--track)"></i><i style="width:${p.garden}%;background:var(--c-garden)"></i></div>
+    <div class="row between tiny" style="white-space:nowrap"><span>Skatepark ${p.skate} %</span><span class="muted">offen ${p.undecided} %</span><span>Garten ${p.garden} %</span></div></div>`;
 }
 
-function vReaction() {
-  const split = S.vals.split;
-  const manip = S.picks.some((p, i) => CH.decisions[i].opts[p].manip);
-  const comments = (split >= 25 ? CH.comments.high : CH.comments.low).map((c, i) => {
-    const id = Object.keys(PEOPLE).find(k => PEOPLE[k].name === c.who);
-    return `<div style="animation-delay:${0.6 + i * 0.7}s" class="fade">${commentHTML(id || c.who, c.text, id ? null : c.who)}</div>`;
-  }).join("");
-  const kessler = commentHTML("kessler", CH.decisions[2].comment.text);
-  const reply = S.picks[2] === 2 ? commentHTML("lindenhain", CH.decisions[2].opts[2].text.replace(/[„“]/g, ""), "Lindenhain Aktuell") : "";
-  const ties = TIES.map(t => {
-    const broken = split >= t.breaksAt;
-    return `<div class="row between"><span>${PEOPLE[t.a].name} und ${PEOPLE[t.b].name}</span><span class="${broken ? "broken" : "muted"}">${broken ? t.broken : t.label}</span></div>`;
-  }).join("");
-  const status = manip
-    ? `<div class="notice">${icon("shield", 18)}Frau Kessler beobachtet deinen Account jetzt genauer.</div>`
-    : `<div class="notice" style="color:var(--good)">${icon("shield", 18)}Die Rundschau zitiert deinen Beitrag als Quelle.</div>`;
+function verdictText(n) {
+  return ["Kaum jemand hat dich bemerkt.", "Ein Anfang, aber die Stadt redet über andere.", "Ordentliche Reichweite für eine Woche.", "Starke Woche. Man kennt dich in Lindenhain.", "Herausragend. Lindenhain liest dich."][n - 1];
+}
+
+function vWeek() {
+  const run = S.run;
+  const n = stars(run.followers);
+  const rank = ranking(run).findIndex(x => x.id === "you") + 1;
+  const next = STAR_LIMITS.find(l => run.followers < l);
   return `<main class="screen fade">
-    ${chapterTop("Lindenhain reagiert")}
-    ${hud(S.vals)}
-    <section class="stack"><h2 class="label">Dein Beitrag ist online</h2>${postHTML({ stats: true })}
-      ${kessler}${reply}${comments}</section>
-    <section class="card stack ties"><h2 class="label">In der Nachbarschaft</h2>${tiesSVG(split)}<div class="tie-list">${ties}</div></section>
-    ${status}
+    ${chapterTop("Wochenbilanz")}
+    <div class="stack" style="gap:2px"><span class="kicker">Tag 7</span><h1 class="head" style="font-size:28px">Wochenbilanz</h1></div>
+    <section class="card accent stack" style="align-items:center;text-align:center">
+      <span class="label">Dein Auftrag: Reichweite</span>
+      ${starsHTML(n, 36)}
+      <div class="big">${fmt(run.followers)}</div><span class="muted small">Follower · Platz ${rank} von 3</span>
+      <p>${verdictText(n)}</p>
+      ${next ? `<p class="tiny muted">Für den nächsten Stern hätten ${fmt(next)} Follower gereicht.</p>` : ""}
+    </section>
+    <section class="stack"><h2 class="label">Zwischenziele</h2>
+      <div class="chips">${MILESTONES.map(m => `<span class="chip ${run.milestones.includes(m) ? "up" : "zero"}">${run.milestones.includes(m) ? "✓" : "○"} ${fmt(m)}</span>`).join("")}</div></section>
+    ${rankingHTML(run, "Endstand")}
+    <section class="card stack"><h2 class="label">Stimmung in Lindenhain</h2>
+      ${pollBar(poll(START.split), "Vor einer Woche")}${pollBar(poll(run.split), "Heute")}
+      <p class="tiny muted">${poll(START.split).undecided - poll(run.split).undecided >= 10 ? "Die Unentschiedenen sind deutlich weniger geworden. Wer jetzt eine feste Meinung hat, hat sie oft aus deinem Feed." : "Viele sind noch unentschieden und wollen mehr wissen."}</p>
+    </section>
+    <section class="card stack"><h2 class="label">Was die Woche verändert hat</h2>
+      ${statuses(run).map(s => `<div class="row" style="align-items:flex-start">${face(s.who, 36)}<div class="stack" style="gap:0"><b class="small">${PEOPLE[s.who].name}</b><span class="small">${esc(s.text)}</span></div></div>`).join("")}
+    </section>
     <button class="btn" data-a="toDebrief">Was steckt dahinter?</button>
   </main>`;
 }
 
+const TIER = { fair: ["fair", "up"], subtil: ["subtil zugespitzt", "mid"], plump: ["plump", "down"] };
+
 function vDebrief() {
   const e = CH.debrief;
-  const mine = S.picks.map((p, i) => {
-    const o = CH.decisions[i].opts[p];
-    const tag = o.manip ? `<span class="chip down">emotionalisierend</span>` : (o.t < 0 ? `<span class="chip zero">ausweichend</span>` : `<span class="chip up">fair</span>`);
-    return `<div class="stack" style="gap:4px"><span class="small">${esc(o.text)}</span>${tag}</div>`;
-  }).join("");
+  const run = S.run;
+  const mine = run.picks.map(p => `<div class="stack" style="gap:4px"><span class="tiny muted">Tag ${p.day}</span><span class="small">${esc(p.text)}</span><span class="chip ${TIER[p.tier][1]}" style="align-self:flex-start">${TIER[p.tier][0]}</span></div>`).join("");
+  const cnt = t => run.picks.filter(p => p.tier === t).length;
   return `<main class="screen fade">
     ${chapterTop("Die Technik")}
     <div class="stack" style="gap:4px"><span class="kicker">Durchschaut</span><h1 class="head" style="font-size:28px">${CH.technique}</h1></div>
@@ -465,7 +509,10 @@ function vDebrief() {
     <section class="card stack"><h2 class="label">Warum es wirkt</h2><p class="muted">${e.why}</p></section>
     <section class="card stack"><h2 class="label">So erkennst du es</h2><ul class="signs">${e.signs.map(s => `<li>${s}</li>`).join("")}</ul></section>
     <section class="card accent stack"><h2 class="label">Deine Gegenfrage</h2><p class="q">${e.question}</p></section>
-    <section class="card stack"><h2 class="label">Deine Entscheidungen</h2>${mine}</section>
+    <section class="card stack"><h2 class="label">Deine Woche</h2>
+      <p class="small">${cnt("subtil")}× subtil, ${cnt("plump")}× plump, ${cnt("fair")}× fair.</p>
+      <p class="small muted">Die meisten Follower bringen die subtilen Varianten: Sie wirken, ohne aufzufallen. Genau deshalb sind sie im Alltag am schwersten zu erkennen.</p>
+      ${mine}</section>
     <button class="btn" data-a="toTest">Zum Mini-Test</button>
   </main>`;
 }
@@ -489,7 +536,7 @@ function vTest() {
   if (a != null) {
     const ok = a === it.verdict;
     fb = `<div class="fb ${ok ? "good" : "bad"}" role="status"><b>${ok ? "Richtig erkannt." : "Nicht ganz."}</b><p>${esc(it.exp)}</p></div>
-      <button class="btn" data-a="nextTest">${S.t < CH.test.length - 1 ? "Nächstes Beispiel" : "Zum Abend in Lindenhain"}</button>`;
+      <button class="btn" data-a="nextTest">${S.t < CH.test.length - 1 ? "Nächstes Beispiel" : "Zum Ergebnis"}</button>`;
   }
   return `<main class="screen fade">
     ${chapterTop(`Mini-Test · ${S.t + 1} von ${CH.test.length}`)}
@@ -500,15 +547,17 @@ function vTest() {
   </main>`;
 }
 
-function vEpilogue() {
-  const split = S.vals.split;
-  const text = split >= 40 ? CH.epilogue.high : split >= 25 ? CH.epilogue.mid : CH.epilogue.low;
+function vFinal() {
+  const run = S.run;
+  const n = stars(run.followers);
   return `<main class="screen fade">
     ${chapterTop("Kapitel 1 geschafft")}
-    <div class="town-frame" style="height:230px">${townSVG({ theme, lightsOff: split >= 40, label: "Lindenhain am Abend nach deinem Beitrag" })}</div>
-    <p style="font-size:18px;line-height:1.5">${esc(text)}</p>
-    <section class="stack"><h2 class="label">Deine Bilanz</h2>${hud(S.vals)}
-      <div class="card row between"><span>Mini-Test</span><b>${S.score} von ${CH.test.length} richtig</b></div></section>
+    <div class="town-frame" style="height:210px">${townSVG({ theme, lightsOff: run.split >= 40, label: "Lindenhain am Ende der Woche" })}</div>
+    <section class="two">
+      <div class="card stack" style="align-items:center;text-align:center;gap:6px"><span class="label">Auftrag</span>${starsHTML(n, 20)}<span class="small">${fmt(run.followers)} Follower</span></div>
+      <div class="card stack" style="align-items:center;text-align:center;gap:6px"><span class="label">Durchschaut</span><div class="big" style="font-size:30px">${S.score}/${CH.test.length}</div><span class="small">im Mini-Test</span></div>
+    </section>
+    <p class="small muted">Die Sterne zeigen, wie gut du manipuliert hast. Worauf es im Alltag ankommt, ist die rechte Zahl.</p>
     <div class="card row">${icon("book", 20)}<span class="small">Neu im Wissen: <b>${CH.technique}</b></span></div>
     <button class="btn" data-a="leave">Zurück nach Lindenhain</button>
     <button class="btn ghost" data-a="startChapter">Kapitel nochmal spielen</button>
@@ -522,22 +571,32 @@ function render(scrollTop = true) {
   const app = document.getElementById("app");
   app.innerHTML = S.view === "menu" ? vMenu() : vChapter();
   if (scrollTop) window.scrollTo({ top: 0 });
-  // Zähler im Beitrag hochlaufen lassen
-  app.querySelectorAll("[data-count]").forEach(el => {
-    const target = +el.dataset.count;
-    const t0 = performance.now(), dur = 1400;
-    const step = now => {
-      const k = Math.min(1, (now - t0) / dur);
-      el.textContent = fmt(target * (1 - Math.pow(1 - k, 3)));
-      if (k < 1) requestAnimationFrame(step);
-    };
-    requestAnimationFrame(step);
-  });
 }
 
-function scrollToFeedback() {
-  const fb = document.querySelector(".fb");
-  if (fb) fb.scrollIntoView({ behavior: "smooth", block: "center" });
+function scrollToEl(sel) {
+  const el = document.querySelector(sel);
+  if (el) el.scrollIntoView({ behavior: "smooth", block: "start" });
+}
+
+let toastTimer = null;
+function toast(milestones) {
+  if (!milestones || !milestones.length) return;
+  let el = document.getElementById("toast");
+  if (!el) { el = document.createElement("div"); el.id = "toast"; el.className = "toast"; el.setAttribute("role", "status"); document.body.appendChild(el); }
+  const m = milestones[milestones.length - 1];
+  el.innerHTML = `${icon("check", 18)}<span>Zwischenziel erreicht: <b>${fmt(m)} Follower</b></span>`;
+  el.classList.add("show");
+  clearTimeout(toastTimer);
+  toastTimer = setTimeout(() => el.classList.remove("show"), 2800);
+}
+
+function beginDay(idx) {
+  S.day = idx; S.dec = 0; S.picked = null; S.fx = null;
+  S.prev = { followers: S.run.followers, trust: S.run.trust, split: S.run.split };
+  S.dayState = startDay(S.run, idx);
+  const t = document.getElementById("toast"); if (t) t.classList.remove("show");
+  render();
+  toast(S.dayState.events.flatMap(e => (e.fx && e.fx.reached) || []));
 }
 
 const actions = {
@@ -553,46 +612,50 @@ const actions = {
     store.progress = structuredClone(DEFAULT.progress); save(); confirmReset = false; render();
   },
   startChapter() { startChapter(); render(); markFocus(); },
-  leave() { S = { view: "menu", tab: "play" }; render(); },
+  leave() { const t = document.getElementById("toast"); if (t) t.classList.remove("show"); S = { view: "menu", tab: "play" }; render(); },
   nextLine() {
     if (S.line < CH.scene.length - 1) { S.line++; render(false); markFocus(); }
     else { S.phase = "mission"; render(); }
   },
   prevLine() { if (S.line > 0) { S.line--; render(false); markFocus(); } },
   skipScene() { S.phase = "mission"; render(); },
-  toDecide() { S.phase = "decide"; S.d = 0; S.picked = null; S.prev = null; render(); },
+  toDay() { S.phase = "day"; beginDay(0); },
   pick(v) {
     if (S.picked != null) return;
-    const o = CH.decisions[S.d].opts[+v];
+    const o = S.dayState.decisions[S.dec].opts[+v];
+    S.prev = { followers: S.run.followers, trust: S.run.trust, split: S.run.split };
     S.picked = +v;
-    S.prev = { ...S.vals };
-    S.vals = {
-      followers: Math.max(0, S.vals.followers + o.f),
-      trust: clamp(S.vals.trust + o.t, 0, 100),
-      split: clamp(S.vals.split + o.s, 0, 100),
-    };
-    render(false); scrollToFeedback();
+    S.fx = applyOption(S.run, S.dayState.day.n, o);
+    render(false);
+    scrollToEl(".fb");
+    toast(S.fx.reached);
   },
-  nextDecision() {
-    S.picks.push(S.picked); S.picked = null; S.prev = null;
-    if (S.d < CH.decisions.length - 1) { S.d++; render(); }
-    else { S.phase = "reaction"; render(); }
+  nextDec() { S.dec++; S.picked = null; S.fx = null; render(); },
+  endDay() {
+    endDay(S.run, S.day);
+    if (S.day < CH.days.length - 1) beginDay(S.day + 1);
+    else { S.phase = "week"; render(); }
   },
   toDebrief() { S.phase = "debrief"; render(); },
   toTest() { S.phase = "test"; S.t = 0; S.ans = null; render(); },
   answer(v) {
     if (S.ans != null) return;
     S.ans = v; if (v === CH.test[S.t].verdict) S.score++;
-    render(false); scrollToFeedback();
+    render(false); scrollToEl(".fb");
   },
   nextTest() {
     S.ans = null;
     if (S.t < CH.test.length - 1) { S.t++; render(); return; }
-    const prev = store.progress.chapters[CH.id];
-    store.progress.chapters[CH.id] = { done: true, vals: S.vals, best: Math.max(prev?.best || 0, S.score) };
+    const prev = store.progress.chapters[CH.id] || {};
+    store.progress.chapters[CH.id] = {
+      done: true,
+      vals: { followers: S.run.followers, trust: S.run.trust, split: S.run.split },
+      stars: Math.max(prev.stars || 0, stars(S.run.followers)),
+      best: Math.max(prev.best || 0, S.score),
+    };
     if (!store.progress.learned.includes(CH.technique)) store.progress.learned.push(CH.technique);
     save();
-    S.phase = "epilogue"; render();
+    S.phase = "final"; render();
   },
 };
 
