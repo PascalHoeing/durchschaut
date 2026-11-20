@@ -1,5 +1,4 @@
 import { resolveTheme } from "./daylight.js";
-import { speak, stopSpeech, speechSupported } from "./speech.js";
 import { townSVG } from "./town.js";
 import { CAMPAIGNS, PEOPLE, TIES, START, CHAPTER1 as CH } from "./content.js";
 
@@ -7,7 +6,7 @@ import { CAMPAIGNS, PEOPLE, TIES, START, CHAPTER1 as CH } from "./content.js";
    Speicher (nur auf diesem Gerät)
    ============================================================ */
 const KEY = "durchschaut-v2";
-const DEFAULT = { settings: { theme: "auto", voice: true }, progress: { chapters: {}, learned: [] } };
+const DEFAULT = { settings: { theme: "auto" }, progress: { chapters: {}, learned: [] } };
 let store = structuredClone(DEFAULT);
 try {
   const raw = localStorage.getItem(KEY);
@@ -39,7 +38,6 @@ setInterval(() => {
    Zustand
    ============================================================ */
 let S = { view: "menu", tab: "play" };
-let sceneRunId = 0;
 let confirmReset = false;
 
 const fmt = n => Math.round(n).toLocaleString("de-DE");
@@ -272,11 +270,6 @@ function vSettings() {
       <p class="tiny muted">Automatisch richtet sich nach der Uhrzeit auf deinem Gerät: tagsüber hell, nach Sonnenuntergang das Abendlicht.</p>
     </section>
     <section class="card stack">
-      <div class="switch"><div class="stack" style="gap:2px"><span style="font-weight:600">Sprachausgabe</span><span class="tiny muted">${speechSupported ? "Prototyp: eingebaute Stimme deines Geräts" : "Auf diesem Gerät nicht verfügbar"}</span></div>
-        <button data-a="toggleVoice" aria-pressed="${store.settings.voice}">${store.settings.voice ? "Ein" : "Aus"}</button></div>
-      <p class="tiny muted">Untertitel sind immer an. Du verpasst also nichts, wenn der Ton aus ist.</p>
-    </section>
-    <section class="card stack">
       <div class="row">${icon("heart", 20)}<span style="font-weight:600">Unterstützen</span></div>
       <p class="tiny muted">Durchschaut ist kostenlos. Die Möglichkeit für ein freiwilliges Trinkgeld kommt mit der Store-Version.</p>
     </section>
@@ -292,10 +285,8 @@ function vSettings() {
    Kapitel
    ============================================================ */
 function startChapter() {
-  stopSpeech();
-  sceneRunId++;
   S = {
-    view: "chapter", phase: "scene", line: 0, paused: false, repeat: false, sceneDone: false, transcript: false,
+    view: "chapter", phase: "scene", line: 0,
     d: 0, picks: [], picked: null, vals: { ...START }, prev: null, t: 0, ans: null, score: 0,
   };
 }
@@ -314,69 +305,29 @@ function vChapter() {
 }
 
 function vScene() {
-  const l = CH.scene[S.line] || CH.scene[CH.scene.length - 1];
+  const l = CH.scene[S.line];
+  const last = S.line === CH.scene.length - 1;
   const dots = CH.scene.map((_, i) => `<i class="${i <= S.line ? "on" : ""}"></i>`).join("");
-  const voice = store.settings.voice && speechSupported;
-  const controls = S.sceneDone
-    ? `<button class="btn" data-a="toMission">Weiter</button>`
-    : `<div class="controls">
-        <button class="btn small ghost" data-a="pauseScene" id="pauseBtn">${S.paused ? icon("play", 18, true) + "Fortsetzen" : icon("pause", 18) + "Pause"}</button>
-        <button class="btn small ghost" data-a="nextLine">${icon("next", 18)}Nächste Zeile</button>
-        <button class="icon-btn" data-a="toggleVoiceScene" aria-label="${voice ? "Ton ausschalten" : "Ton einschalten"}" aria-pressed="${voice}">${icon(voice ? "sound" : "mute", 20)}</button>
-      </div>`;
-  const transcript = S.transcript
-    ? `<div class="card transcript" id="transcript">${CH.scene.map((x, i) => `<p class="${i === S.line ? "cur" : ""}">${esc(x.text)}</p>`).join("")}</div>` : "";
-  return `<main class="screen fade">
+  return `<main class="screen ${S.line === 0 ? "fade" : ""}">
     ${chapterTop("Kampagne 1 · Kapitel 1")}
-    <div class="town-frame scene-town">${townSVG({ theme, animate: true, focusables: ["lot", "buergerhaus", "cafe"], label: "Lindenhain: Szene zum Kapitelbeginn" })}</div>
+    <div class="town-frame scene-town">${townSVG({ theme, animate: S.line === 0, focusables: ["lot", "buergerhaus", "cafe"], label: "Lindenhain: Szene zum Kapitelbeginn" })}</div>
     <div class="card subtitle" aria-live="polite">
-      <span class="who" id="subWho">${esc(l.who)}</span>
-      <p class="line" id="subLine">${esc(l.text)}</p>
+      <span class="who">${esc(l.who)}</span>
+      <p class="line">${esc(l.text)}</p>
     </div>
-    <div class="row between"><div class="dots" id="dots">${dots}</div>
-      <button class="linkbtn" data-a="toggleTranscript">${icon("text", 16)} ${S.transcript ? "Text ausblenden" : "Ganzer Text"}</button></div>
-    ${transcript}
-    <div id="sceneControls">${controls}</div>
-    ${S.sceneDone ? "" : `<div style="text-align:center"><button class="linkbtn" data-a="skipScene">Szene überspringen</button></div>`}
+    <div class="row between"><div class="dots" aria-label="Zeile ${S.line + 1} von ${CH.scene.length}">${dots}</div>
+      ${last ? "" : `<button class="linkbtn" data-a="skipScene">Szene überspringen</button>`}</div>
+    <div class="row">
+      <button class="btn ghost" style="flex:1" data-a="prevLine" ${S.line === 0 ? "disabled" : ""}>Zurück</button>
+      <button class="btn" style="flex:2" data-a="nextLine">${last ? "Zum Auftrag" : "Weiter"}</button>
+    </div>
   </main>`;
 }
 
-function showLine() {
+// Hebt den Ort der aktuellen Zeile in der Stadt hervor
+function markFocus() {
   const l = CH.scene[S.line];
-  if (!l) return;
-  const who = document.getElementById("subWho");
-  const line = document.getElementById("subLine");
-  if (line) {
-    who.textContent = l.who;
-    line.textContent = l.text;
-    line.style.animation = "none"; void line.offsetWidth; line.style.animation = "";
-  }
-  document.querySelectorAll("#dots i").forEach((d, i) => d.classList.toggle("on", i <= S.line));
-  document.querySelectorAll(".town .focus").forEach(e => e.classList.toggle("on", e.dataset.focus === l.focus));
-  document.querySelectorAll("#transcript p").forEach((p, i) => p.classList.toggle("cur", i === S.line));
-}
-
-async function runScene() {
-  const id = ++sceneRunId;
-  while (S.view === "chapter" && S.phase === "scene" && S.line < CH.scene.length) {
-    showLine();
-    await speak(CH.scene[S.line].text, { enabled: store.settings.voice });
-    if (id !== sceneRunId) return;
-    if (S.paused) {
-      while (S.paused && id === sceneRunId) await new Promise(r => setTimeout(r, 150));
-      if (id !== sceneRunId) return;
-      continue;
-    }
-    if (S.repeat) { S.repeat = false; continue; }
-    if (S.line < CH.scene.length - 1) S.line++;
-    else break;
-  }
-  if (id !== sceneRunId) return;
-  S.sceneDone = true;
-  const c = document.getElementById("sceneControls");
-  if (c) c.innerHTML = `<button class="btn" data-a="toMission">Weiter</button>`;
-  const skip = document.querySelector('[data-a="skipScene"]');
-  if (skip) skip.parentElement.remove();
+  document.querySelectorAll(".town .focus").forEach(e => e.classList.toggle("on", !!l && e.dataset.focus === l.focus));
 }
 
 function vMission() {
@@ -597,42 +548,18 @@ const actions = {
     save(); applyTheme(); render(false);
   },
   setTheme(v) { store.settings.theme = v; save(); applyTheme(); render(false); },
-  toggleVoice() { store.settings.voice = !store.settings.voice; save(); render(false); },
   reset() {
     if (!confirmReset) { confirmReset = true; render(false); return; }
     store.progress = structuredClone(DEFAULT.progress); save(); confirmReset = false; render();
   },
-  startChapter() { startChapter(); render(); runScene(); },
-  leave() { sceneRunId++; stopSpeech(); S = { view: "menu", tab: "play" }; render(); },
-  pauseScene() {
-    S.paused = !S.paused;
-    if (S.paused) stopSpeech();
-    const b = document.getElementById("pauseBtn");
-    if (b) b.innerHTML = S.paused ? icon("play", 18, true) + "Fortsetzen" : icon("pause", 18) + "Pause";
+  startChapter() { startChapter(); render(); markFocus(); },
+  leave() { S = { view: "menu", tab: "play" }; render(); },
+  nextLine() {
+    if (S.line < CH.scene.length - 1) { S.line++; render(false); markFocus(); }
+    else { S.phase = "mission"; render(); }
   },
-  nextLine() { S.paused = false; S.repeat = false; stopSpeech(); },
-  toggleVoiceScene() {
-    store.settings.voice = !store.settings.voice; save();
-    S.repeat = true; stopSpeech();
-    const btn = document.querySelector('[data-a="toggleVoiceScene"]');
-    const on = store.settings.voice && speechSupported;
-    if (btn) { btn.innerHTML = icon(on ? "sound" : "mute", 20); btn.setAttribute("aria-pressed", on); btn.setAttribute("aria-label", on ? "Ton ausschalten" : "Ton einschalten"); }
-  },
-  toggleTranscript() {
-    S.transcript = !S.transcript;
-    // nur den Bereich neu zeichnen, damit Szene und Stimme weiterlaufen
-    const existing = document.getElementById("transcript");
-    const btn = document.querySelector('[data-a="toggleTranscript"]');
-    if (S.transcript && !existing) {
-      const div = document.createElement("div");
-      div.className = "card transcript"; div.id = "transcript";
-      div.innerHTML = CH.scene.map((x, i) => `<p class="${i === S.line ? "cur" : ""}">${esc(x.text)}</p>`).join("");
-      btn.closest(".row").after(div);
-    } else if (!S.transcript && existing) existing.remove();
-    if (btn) btn.innerHTML = `${icon("text", 16)} ${S.transcript ? "Text ausblenden" : "Ganzer Text"}`;
-  },
-  skipScene() { sceneRunId++; stopSpeech(); S.phase = "mission"; render(); },
-  toMission() { sceneRunId++; stopSpeech(); S.phase = "mission"; render(); },
+  prevLine() { if (S.line > 0) { S.line--; render(false); markFocus(); } },
+  skipScene() { S.phase = "mission"; render(); },
   toDecide() { S.phase = "decide"; S.d = 0; S.picked = null; S.prev = null; render(); },
   pick(v) {
     if (S.picked != null) return;
