@@ -15,26 +15,33 @@ export const PEOPLE = {
   deniz: { name: "Deniz", role: "24, Skatepark-Initiative" },
   yilmaz: { name: "Herr Yılmaz", role: "Bäckerei am Markt" },
   kessler: { name: "Frau Kessler", role: "Lindenhainer Rundschau" },
+  moeller: { name: "Frau Möller", role: "Mutter von zwei Kindern" },
 };
-
-export const START = { followers: 120, trust: 60, split: 10 };
 
 export const COMPETITORS = {
-  live: { name: "Lindenhain Live", short: "Live", color: "#8a5a44", start: 800, desc: "Reißerisch, wächst schnell" },
-  rundschau: { name: "Lindenhainer Rundschau", short: "Rundschau", color: "#2f6b5f", start: 2400, desc: "Lokalzeitung, wächst stetig" },
+  live: { name: "Lindenhain Live", short: "Live", color: "#8a5a44" },
+  rundschau: { name: "Lindenhainer Rundschau", short: "Rundschau", color: "#2f6b5f" },
 };
-// Zuwachs der Konkurrenten je Tag (Tag 1 bis 6). Tag 6: Live fliegt mit der Falschmeldung auf.
-export const COMP_GROWTH = {
-  live: [190, 210, 200, 170, 280, 30],
-  rundschau: [40, 50, 60, 110, 50, 90],
-};
-export const LIVE_DEBUNK_LOSS = 0.35;
 
-export const MILESTONES = [250, 500, 1000, 2000];
-export const STAR_LIMITS = [500, 800, 1100, 1400]; // ab hier 2, 3, 4, 5 Sterne
+// Alle Techniken des Spiels, nach Kampagnen (für die Wissenskarte)
+export const TECHNIQUES = [
+  { campaign: 1, list: ["Emotionalisierung", "Clickbait", "Falsche Experten", "Aus dem Zusammenhang", "Polarisierung"] },
+  { campaign: 2, list: ["Strohmann", "Whataboutism", "Falsches Dilemma", "Angriff auf die Person", "Sündenbock"] },
+  { campaign: 3, list: ["Rosinenpicken", "Irreführende Diagramme", "Framing", "„Ich stelle ja nur Fragen“", "Falsche Ausgewogenheit"] },
+  { campaign: 4, list: ["Vorgetäuschte Bürgerbewegung", "Fake-Accounts", "Scheinbar unabhängige Nachrichtenseiten", "KI-Fälschungen"] },
+];
 
 export const CHAPTER1 = {
-  id: "k1-1",
+  id: "k1-1", campaign: 1, n: 1,
+  start: { followers: 120, trust: 60, split: 10 },
+  compStart: { live: 800, rundschau: 2400 },
+  compDesc: { live: "Reißerisch, wächst schnell", rundschau: "Lokalzeitung, wächst stetig" },
+  // Zuwachs der Konkurrenten je Tag (Tag 1 bis 6)
+  growth: { live: [190, 210, 200, 170, 280, 30], rundschau: [40, 50, 60, 110, 50, 90] },
+  milestones: [250, 500, 1000, 2000],
+  starLimits: [500, 800, 1100, 1400], // ab hier 2, 3, 4, 5 Sterne
+  focusables: ["lot", "buergerhaus", "cafe"],
+  insight: "Die meisten Follower bringen die subtilen Varianten: Sie wirken, ohne aufzufallen. Genau deshalb sind sie im Alltag am schwersten zu erkennen.",
   title: "Eine Woche in Lindenhain",
   technique: "Emotionalisierung",
   scene: [
@@ -213,4 +220,60 @@ export const ILSE_DECISION = {
     { tier: "plump", text: "Neuer Beitrag: „Seniorin wird angefeindet, weil sie ihre Meinung sagt!“", f: 110, t: -8, s: 6,
       fb: "Du machst aus ihrer Bitte die nächste Schlagzeile. Das bringt Reichweite – und Ilse noch mehr Aufmerksamkeit, die sie nicht wollte." },
   ],
+};
+
+// Tag 4 und 6 von Kapitel 1 hängen von deinen Entscheidungen ab.
+CHAPTER1.dynamic = {
+  factcheck(run, fx) {
+    const found = factcheckFindings(run.flags);
+    if (found.length) {
+      return {
+        intro: "Frau Kessler von der Rundschau hat deine Beiträge geprüft und schreibt öffentlich:",
+        events: [{ who: "kessler", items: found }],
+        decisions: [factcheckDecision(found.length)],
+      };
+    }
+    return {
+      intro: "Frau Kessler von der Rundschau hat deine Beiträge geprüft.",
+      events: [{ who: "kessler", text: "„Lindenhain Aktuell berichtet fair über die Freifläche. Lesenswert.“ Die Rundschau verlinkt dich.", fx: fx(100, 6, -1) }],
+      decisions: [],
+    };
+  },
+  ilse(run, fx) {
+    const events = [];
+    const lost = Math.round(run.comp.live * 0.35);
+    run.comp.live -= lost;
+    events.push({ who: "news", text: `Lindenhain Live verliert ${lost.toLocaleString("de-DE")} Follower.` });
+    if (run.flags.sharedFake) events.push({ who: "you", text: "Du hattest die Meldung geteilt. Viele werfen dir vor, ein Gerücht verbreitet zu haben.", fx: fx(-200, -10, 0) });
+    else if (run.flags.verified) events.push({ who: "you", text: "Deine Meldung von gestern wird jetzt überall zitiert: Du hattest zuerst nachgefragt.", fx: fx(90, 3, -1) });
+    let decisions = [];
+    if (run.flags.quote || run.flags.ilsePhoto) decisions = [ILSE_DECISION];
+    else events.push({ who: "ilse", text: "Ilse kommentiert unter deinem Beitrag: „Endlich mal jemand, der beide Seiten zeigt.“", fx: fx(30, 2, 0) });
+    return {
+      intro: "Die Polizei stellt klar: Es gibt keine Anzeige, der Vorfall ist nicht bekannt. Lindenhain Live löscht den Beitrag kommentarlos.",
+      events, decisions,
+    };
+  },
+};
+
+// Was die Woche mit den Menschen gemacht hat – bewusst realistisch und leise.
+CHAPTER1.statuses = run => {
+  const usedIlse = run.flags.quote || run.flags.ilsePhoto;
+  const out = [];
+  if (usedIlse && !run.flags.ilseRemoved) out.push({ who: "ilse", text: "Bekommt Nachrichten, sie sei gegen die Jugend. Geht zur nächsten Versammlung lieber nicht." });
+  else if (usedIlse) out.push({ who: "ilse", text: "Ist erleichtert, dass ihr Zitat raus ist. Zur nächsten Versammlung will sie trotzdem gehen." });
+  else if (run.split >= 40) out.push({ who: "ilse", text: "Wird beim Bäcker gefragt, auf welcher Seite sie steht. Sie sagt lieber nichts mehr dazu." });
+  else out.push({ who: "ilse", text: "Freut sich auf die nächste Versammlung und hat Ideen für einen Kompromiss." });
+
+  if (run.split >= 40) out.push({ who: "deniz", text: "Unter den Beiträgen der Initiative stehen gehässige Kommentare. Zwei Mitglieder sind ausgestiegen." });
+  else if (run.split >= 25) out.push({ who: "deniz", text: "Muss sich in Kommentaren oft rechtfertigen. Die Initiative bleibt aber zusammen." });
+  else out.push({ who: "deniz", text: "Sammelt Unterschriften und plant einen Tag der offenen Tür auf der Freifläche." });
+
+  if (run.split >= 40) out.push({ who: "yilmaz", text: "In der Bäckerei wird nur noch über den Park gestritten. Er hat ein Schild aufgehängt: „Bitte keine Politik an der Theke.“" });
+  else out.push({ who: "yilmaz", text: "Hört sich beide Seiten an und verkauft Kuchen für beide." });
+
+  if (run.flags.attacked) out.push({ who: "kessler", text: "Hat in einem Kommentar über „Stimmungsmache im Netz“ geschrieben. Dein Account wird darin erwähnt." });
+  else if (factcheckFindings(run.flags).length) out.push({ who: "kessler", text: "Prüft deine Beiträge jetzt regelmäßig." });
+  else out.push({ who: "kessler", text: "Verlinkt dich gelegentlich als Quelle." });
+  return out;
 };

@@ -191,6 +191,13 @@ ul.signs li::before { content: ""; position: absolute; left: 3px; top: .62em; wi
 
 .fade { animation: fadein .35s ease both; }
 
+/* Kapitelliste */
+.ch-row { display: flex; gap: 12px; align-items: center; width: 100%; min-height: 52px; padding: 8px 12px; text-align: left;
+  border: 1px solid var(--line); border-radius: 12px; background: var(--surf2); }
+.ch-row[disabled], .ch-row.locked { opacity: .6; cursor: default; }
+.ch-n { width: 28px; height: 28px; border-radius: 8px; display: flex; align-items: center; justify-content: center; font-weight: 700; font-size: 14px; background: var(--surf); border: 1px solid var(--line); flex: none; }
+.ch-t { display: flex; flex-direction: column; flex: 1; min-width: 0; font-size: 15px; }
+
 /* Rangliste */
 .rank-row { display: flex; gap: 10px; align-items: center; }
 .rank-row .pos { width: 20px; font-weight: 700; color: var(--muted); font-variant-numeric: tabular-nums; }

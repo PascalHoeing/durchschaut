@@ -1,7 +1,10 @@
 import { resolveTheme } from "./daylight.js";
 import { townSVG } from "./town.js";
-import { CAMPAIGNS, PEOPLE, START, COMPETITORS, MILESTONES, STAR_LIMITS, CHAPTER1 as CH } from "./content.js";
-import { newRun, startDay, applyOption, endDay, ranking, stars, poll, statuses } from "./sim.js";
+import { CAMPAIGNS, PEOPLE, COMPETITORS, TECHNIQUES } from "./content.js";
+import { CHAPTERS, PLANNED } from "./chapters.js";
+import { newRun, startDay, applyOption, endDay, ranking, stars, poll } from "./sim.js";
+
+let CH = CHAPTERS[0]; // aktuell gespieltes Kapitel
 
 /* ============================================================
    Speicher (nur auf diesem Gerät)
@@ -82,6 +85,7 @@ function face(id, size = 44) {
     deniz: { cl: day ? "#D9604A" : "#B0503C", skin: "#C68E6A", hair: "#2B2421", cap: day ? "#E7A93B" : "#F2B84B" },
     yilmaz: { cl: day ? "#8A6A4A" : "#7A5C40", skin: "#D9A47E", hair: "#3A2E2A", apron: "#F3EEE4" },
     kessler: { cl: day ? "#4C6496" : "#3E5285", skin: "#F3D2B8", hair: "#3A2E2A" },
+    moeller: { cl: day ? "#9A6BB0" : "#7E5A92", skin: "#E9C09E", hair: "#B5772E" },
   }[id];
   let g = "";
   if (id === "ilse") {
@@ -97,6 +101,11 @@ function face(id, size = 44) {
     g = `<path d="M20 140 C20 108 38 96 60 96 C82 96 100 108 100 140Z" fill="${c.cl}"/><path d="M42 140 V104 H78 V140Z" fill="${c.apron}"/><rect x="52" y="80" width="16" height="18" fill="${c.skin}"/><circle cx="60" cy="62" r="23" fill="${c.skin}"/>`
       + `<path d="M38 58 C38 40 48 36 60 36 C72 36 82 40 82 58 C76 48 66 46 60 46 C54 46 44 48 38 58Z" fill="${c.hair}"/><path d="M50 74 Q60 70 70 74" fill="none" stroke="${c.hair}" stroke-width="5" stroke-linecap="round"/>`
       + `<circle cx="52" cy="62" r="2.5" fill="${feat}"/><circle cx="68" cy="62" r="2.5" fill="${feat}"/><path d="M54 80 Q60 84 66 80" fill="none" stroke="${feat}" stroke-width="2" stroke-linecap="round"/>`;
+  } else if (id === "moeller") {
+    g = `<path d="M20 140 C20 108 38 96 60 96 C82 96 100 108 100 140Z" fill="${c.cl}"/><rect x="52" y="82" width="16" height="16" fill="${c.skin}"/>`
+      + `<path d="M36 66 C34 42 46 34 60 34 C76 34 86 44 84 66 C90 76 92 88 88 96 C80 90 82 76 80 66Z" fill="${c.hair}"/><circle cx="60" cy="62" r="21" fill="${c.skin}"/>`
+      + `<path d="M39 58 C42 44 52 40 62 40 C72 40 80 46 81 58 C70 50 52 50 39 58Z" fill="${c.hair}"/><circle cx="52" cy="64" r="2.5" fill="${feat}"/><circle cx="68" cy="64" r="2.5" fill="${feat}"/>`
+      + `<path d="M54 74 Q60 72 66 74" fill="none" stroke="${feat}" stroke-width="2" stroke-linecap="round"/>`;
   } else {
     g = `<path d="M20 140 C20 108 38 96 60 96 C82 96 100 108 100 140Z" fill="${c.cl}"/><path d="M50 96 L60 120 L70 96Z" fill="#FFFFFF"/><rect x="52" y="82" width="16" height="16" fill="${c.skin}"/>`
       + `<path d="M34 72 C32 44 44 36 60 36 C76 36 88 44 86 72 L80 84 L40 84Z" fill="${c.hair}"/><circle cx="60" cy="62" r="21" fill="${c.skin}"/>`
@@ -117,6 +126,30 @@ function photo(kind) {
       + `<path d="M140 64 Q146 61 152 64 M168 64 Q174 61 180 64" stroke="#7A6A5A" stroke-width="2" fill="none" stroke-linecap="round"/>`
       + `<path d="M150 92 Q160 88 170 92" fill="none" stroke="#2A2A2A" stroke-width="2.5" stroke-linecap="round"/>`
       + `<path d="M196 120 C206 104 214 98 222 100 C226 112 218 124 206 132Z" fill="#E8BFA0"/></svg>`;
+  }
+  if (kind === "map") {
+    return `<svg viewBox="0 0 320 170" role="img" aria-label="Plan der Freifläche mit markierter Ecke"><rect width="320" height="170" fill="#F3EEE4"/>`
+      + `<rect x="40" y="24" width="240" height="122" fill="#DCE8D2" stroke="#8796B0" stroke-width="2"/>`
+      + `<path d="M40 24 h240 v122 h-240z" fill="none" stroke="#8796B0" stroke-width="2" stroke-dasharray="2 0"/>`
+      + `<rect x="236" y="108" width="44" height="38" fill="#D9604A" opacity="0.35" stroke="#D9604A" stroke-width="2" stroke-dasharray="5 4"/>`
+      + `<text x="160" y="90" font-size="13" font-weight="700" font-family="Inter, sans-serif" fill="#4A5878" text-anchor="middle">Freifläche · 4.000 m²</text>`
+      + `<text x="258" y="131" font-size="9" font-weight="700" font-family="Inter, sans-serif" fill="#8F2E1E" text-anchor="middle">betroffen</text>`
+      + `<path d="M30 160 h40" stroke="#4A5878" stroke-width="2"/><text x="76" y="164" font-size="9" font-family="Inter, sans-serif" fill="#4A5878">20 m</text></svg>`;
+  }
+  if (kind === "glove") {
+    return `<svg viewBox="0 0 320 170" role="img" aria-label="Hand im Schutzhandschuh hält eine Bodenprobe"><rect width="320" height="170" fill="#D8DEE4"/>`
+      + `<rect y="120" width="320" height="50" fill="#B9C2CC"/>`
+      + `<path d="M80 170 C90 120 120 96 150 92 L190 90 C206 90 214 100 206 108 L172 112 C200 116 214 124 208 132 L160 138 C130 150 110 160 100 170Z" fill="#3E8EB8"/>`
+      + `<rect x="168" y="44" width="34" height="64" rx="6" fill="#F3F6F9" stroke="#8796B0" stroke-width="2"/>`
+      + `<rect x="170" y="76" width="30" height="30" rx="4" fill="#6B5A4A"/><rect x="166" y="38" width="38" height="10" rx="3" fill="#D9604A"/>`
+      + `<rect x="174" y="56" width="22" height="10" fill="#FFFFFF" stroke="#8796B0"/><text x="185" y="64" font-size="6" font-family="Inter, sans-serif" fill="#4A5878" text-anchor="middle">P-07</text></svg>`;
+  }
+  if (kind === "skull") {
+    return `<svg viewBox="0 0 320 170" role="img" aria-label="Symbolbild: Warnschild mit Totenkopf"><rect width="320" height="170" fill="#1E1E1E"/>`
+      + `<polygon points="160,18 248,150 72,150" fill="#F2C230" stroke="#111" stroke-width="6" stroke-linejoin="round"/>`
+      + `<circle cx="160" cy="92" r="24" fill="#111"/><rect x="146" y="108" width="28" height="16" rx="3" fill="#111"/>`
+      + `<circle cx="151" cy="90" r="6" fill="#F2C230"/><circle cx="169" cy="90" r="6" fill="#F2C230"/>`
+      + `<path d="M118 132 L202 140 M118 140 L202 132" stroke="#111" stroke-width="7" stroke-linecap="round"/></svg>`;
   }
   if (kind === "tunnel") {
     return `<svg viewBox="0 0 320 170" role="img" aria-label="Symbolbild: dunkle Unterführung mit Graffiti"><rect width="320" height="170" fill="#15171C"/>`
@@ -195,12 +228,29 @@ function vMenu() {
   </div></nav>`;
 }
 
+function chapterState(ch) { return store.progress.chapters[ch.id]; }
+function isUnlocked(i) { return i === 0 || !!chapterState(CHAPTERS[i - 1])?.done; }
+function nextChapterIndex() {
+  const i = CHAPTERS.findIndex((c, k) => isUnlocked(k) && !chapterState(c)?.done);
+  return i >= 0 ? i : CHAPTERS.length - 1;
+}
+
 function vPlay() {
-  const c1 = store.progress.chapters[CH.id];
-  const doneCount = Object.values(store.progress.chapters).filter(x => x.done).length;
+  const doneCount = CHAPTERS.filter(c => chapterState(c)?.done).length;
+  const ni = nextChapterIndex();
+  const next = CHAPTERS[ni];
+  const nextDone = !!chapterState(next)?.done;
   const pins = [
     { id: "cafe", n: 1, state: "active" }, { id: "rathaus", n: 2 }, { id: "verlag", n: 3 }, { id: "funkturm", n: 4 }, { id: "buergerhaus", n: 5 },
   ];
+  const chapterRows = [...CHAPTERS.map((c, i) => {
+    const st = chapterState(c);
+    const open = isUnlocked(i);
+    const right = st?.done ? starsHTML(st.stars || 1, 14) : open ? `<span class="tiny" style="color:var(--accent-text)">neu</span>` : icon("lock", 16);
+    return `<button class="ch-row" data-a="startChapter" data-v="${c.id}" ${open ? "" : "disabled"}>
+      <span class="ch-n">${c.n}</span><span class="ch-t"><b>${esc(c.title)}</b><span class="tiny muted">${esc(c.technique)}</span></span>${right}</button>`;
+  }), ...PLANNED.map(p => `<div class="ch-row locked"><span class="ch-n">${p.n}</span><span class="ch-t"><b>${esc(p.title)}</b><span class="tiny muted">in Arbeit</span></span>${icon("lock", 16)}</div>`)].join("");
+
   const timeline = CAMPAIGNS.map((c, i) => {
     const last = i === CAMPAIGNS.length - 1;
     const active = c.n === 1;
@@ -224,12 +274,12 @@ function vPlay() {
     <section class="card" style="padding:0;overflow:hidden">
       <div style="height:200px">${townSVG({ theme, pins, animate: true })}</div>
       <div class="stack" style="padding:16px 18px 18px">
-        <div class="row between"><span class="kicker">Kampagne 1 · Frühjahr</span><span class="tiny muted" style="white-space:nowrap">Kapitel 1 von 5</span></div>
-        <h2 class="head" style="font-size:24px">Der Account</h2>
-        <p class="muted small">Kapitel 1: ${CH.title}. ${CAMPAIGNS[0].teaser}</p>
+        <div class="row between"><span class="kicker">Kampagne 1 · Der Account</span><span class="tiny muted" style="white-space:nowrap">${doneCount} von 5 Kapiteln</span></div>
+        <h2 class="head" style="font-size:22px">Kapitel ${next.n}: ${esc(next.title)}</h2>
         <div class="bar"><i style="width:${doneCount * 20}%"></i></div>
-        <button class="btn" data-a="startChapter">${icon("play", 18, true)}${c1?.done ? "Kapitel 1 nochmal spielen" : "Spielen"}</button>
-        ${c1?.done ? `<p class="tiny muted">Kapitel 2 kommt mit der nächsten Version.</p>` : ""}
+        <button class="btn" data-a="startChapter" data-v="${next.id}">${icon("play", 18, true)}${nextDone ? "Nochmal spielen" : "Spielen"}</button>
+        ${nextDone && ni === CHAPTERS.length - 1 ? `<p class="tiny muted">Kapitel ${next.n + 1} kommt mit der nächsten Version.</p>` : ""}
+        <div class="stack" style="gap:6px;margin-top:6px">${chapterRows}</div>
       </div>
     </section>
     <section class="stack" style="gap:6px">
@@ -238,38 +288,37 @@ function vPlay() {
     </section>`;
 }
 
-const TECHNIQUES = ["Emotionalisierung", "Polarisierung", "Clickbait", "Falsche Experten", "Aus dem Zusammenhang"];
 function vWissen() {
   const learned = store.progress.learned;
-  const items = TECHNIQUES.map(t => {
-    if (learned.includes(t) && t === "Emotionalisierung") {
+  const card = t => {
+    const ch = CHAPTERS.find(c => c.technique === t);
+    if (learned.includes(t) && ch) {
       return `<article class="card stack">
-        <div class="row between"><h3 class="head" style="font-size:19px">${t}</h3><span class="tiny" style="color:var(--good)">${icon("check", 16)} durchschaut</span></div>
-        <p class="small">${CH.debrief.what}</p>
-        <ul class="signs small">${CH.debrief.signs.map(s => `<li>${s}</li>`).join("")}</ul>
-        <p class="q small">${CH.debrief.question}</p></article>`;
+        <div class="row between"><h3 class="head" style="font-size:19px">${t}</h3><span class="tiny row" style="color:var(--good);gap:4px">${icon("check", 16)}durchschaut</span></div>
+        <p class="small">${ch.debrief.what}</p>
+        <ul class="signs small">${ch.debrief.signs.map(s => `<li>${s}</li>`).join("")}</ul>
+        <p class="q small">${ch.debrief.question}</p></article>`;
     }
-    return `<div class="tl-card locked"><span style="font-weight:600">${t}</span><span class="row tiny">${icon("lock", 16)}Kampagne 1</span></div>`;
-  }).join("");
-  return `<header class="stack" style="gap:4px"><h1 class="head" style="font-size:26px">Wissen</h1><p class="muted small">Jede Technik, die du durchschaut hast, landet hier – mit den Erkennungszeichen für den Alltag.</p></header>
-    <section class="stack">${items}</section>`;
+    return `<div class="tl-card locked"><span style="font-weight:600">${t}</span>${icon("lock", 16)}</div>`;
+  };
+  const count = TECHNIQUES.reduce((a, g) => a + g.list.length, 0);
+  return `<header class="stack" style="gap:4px"><h1 class="head" style="font-size:26px">Wissen</h1><p class="muted small">${learned.length} von ${count} Techniken durchschaut. Jede landet hier – mit den Erkennungszeichen für den Alltag.</p></header>
+    ${TECHNIQUES.map(g => `<section class="stack"><h2 class="label">Kampagne ${g.campaign}</h2>${g.list.map(card).join("")}</section>`).join("")}`;
 }
 
 function vFortschritt() {
-  const c1 = store.progress.chapters[CH.id];
-  if (!c1) {
+  const played = CHAPTERS.filter(c => chapterState(c)?.done);
+  if (!played.length) {
     return `<header class="stack" style="gap:4px"><h1 class="head" style="font-size:26px">Fortschritt</h1></header>
-      <div class="card stack"><p>Noch nichts gespielt.</p><p class="muted small">Starte Kampagne 1, dann siehst du hier deine Werte und Testergebnisse.</p>
-      <button class="btn" data-a="startChapter">${icon("play", 18, true)}Kapitel 1 spielen</button></div>`;
+      <div class="card stack"><p>Noch nichts gespielt.</p><p class="muted small">Starte Kampagne 1, dann siehst du hier deine Sterne und Testergebnisse.</p>
+      <button class="btn" data-a="startChapter" data-v="${CHAPTERS[0].id}">${icon("play", 18, true)}Kapitel 1 spielen</button></div>`;
   }
-  return `<header class="stack" style="gap:4px"><h1 class="head" style="font-size:26px">Fortschritt</h1><p class="muted small">Kampagne 1 · Der Account</p></header>
-    <section class="card stack">
-      <div class="row between"><span>Kapitel abgeschlossen</span><b>1 von 5</b></div>
-      <div class="bar"><i style="width:20%"></i></div>
-      <div class="row between"><span>Beste Wochenbilanz</span>${starsHTML(c1.stars || 1, 18)}</div>
-      <div class="row between"><span>Bester Mini-Test</span><b>${c1.best} von ${CH.test.length}</b></div>
-    </section>
-    <section class="stack"><h2 class="label">Deine Werte nach Kapitel 1</h2>${hud(c1.vals)}</section>
+  return `<header class="stack" style="gap:4px"><h1 class="head" style="font-size:26px">Fortschritt</h1><p class="muted small">Kampagne 1 · Der Account · ${played.length} von 5 Kapiteln</p></header>
+    <div class="bar"><i style="width:${played.length * 20}%"></i></div>
+    ${played.map(c => { const st = chapterState(c); return `<section class="card stack">
+      <div class="row between"><b>Kapitel ${c.n}: ${esc(c.title)}</b>${starsHTML(st.stars || 1, 16)}</div>
+      <div class="row between small"><span class="muted">Follower am Ende</span><b class="num">${fmt(st.vals.followers)}</b></div>
+      <div class="row between small"><span class="muted">Bester Mini-Test</span><b>${st.best} von ${c.test.length}</b></div></section>`; }).join("")}
     <p class="muted small">Viele Sterne heißen: Du hast die Technik gut angewendet. Wer sie selbst benutzt hat, erkennt sie im Alltag schneller.</p>`;
 }
 
@@ -297,8 +346,9 @@ function vSettings() {
 /* ============================================================
    Kapitel
    ============================================================ */
-function startChapter() {
-  S = { view: "chapter", phase: "scene", line: 0, run: newRun(), day: 0, dec: 0, dayState: null, picked: null, fx: null, prev: null, t: 0, ans: null, score: 0 };
+function startChapter(id) {
+  CH = CHAPTERS.find(c => c.id === id) || CHAPTERS[0];
+  S = { view: "chapter", phase: "scene", line: 0, run: newRun(CH), day: 0, dec: 0, dayState: null, picked: null, fx: null, prev: null, t: 0, ans: null, score: 0 };
 }
 
 function vChapter() {
@@ -319,8 +369,8 @@ function vScene() {
   const last = S.line === CH.scene.length - 1;
   const dots = CH.scene.map((_, i) => `<i class="${i <= S.line ? "on" : ""}"></i>`).join("");
   return `<main class="screen ${S.line === 0 ? "fade" : ""}">
-    ${chapterTop("Kampagne 1 · Kapitel 1")}
-    <div class="town-frame scene-town">${townSVG({ theme, animate: S.line === 0, focusables: ["lot", "buergerhaus", "cafe"], label: "Lindenhain: Szene zum Kapitelbeginn" })}</div>
+    ${chapterTop(`Kampagne ${CH.campaign} · Kapitel ${CH.n}`)}
+    <div class="town-frame scene-town">${townSVG({ theme, animate: S.line === 0, focusables: CH.focusables, label: "Lindenhain: Szene zum Kapitelbeginn" })}</div>
     <div class="card subtitle" aria-live="polite">
       <span class="who">${esc(l.who)}</span>
       <p class="line">${esc(l.text)}</p>
@@ -371,16 +421,16 @@ function starsHTML(n, size = 30) {
 function vMission() {
   const run = S.run;
   return `<main class="screen fade">
-    ${chapterTop("Kampagne 1 · Kapitel 1")}
-    <div class="stack" style="gap:4px"><span class="kicker">Kapitel 1</span><h1 class="head" style="font-size:28px">${CH.title}</h1></div>
+    ${chapterTop(`Kampagne ${CH.campaign} · Kapitel ${CH.n}`)}
+    <div class="stack" style="gap:4px"><span class="kicker">Kapitel ${CH.n}</span><h1 class="head" style="font-size:28px">${CH.title}</h1></div>
     <section class="card accent stack"><span class="kicker">Dein Auftrag</span><p style="font-size:18px">${CH.mission}</p></section>
     <section class="stack"><h2 class="label">Die Konkurrenz</h2>
-      ${["live", "rundschau"].map(id => `<div class="card row">${compAvatar(id)}<div class="stack" style="gap:0;flex:1"><b>${COMPETITORS[id].name}</b><span class="tiny muted">${COMPETITORS[id].desc}</span></div><b class="num">${fmt(COMPETITORS[id].start)}</b></div>`).join("")}
+      ${["live", "rundschau"].map(id => `<div class="card row">${compAvatar(id)}<div class="stack" style="gap:0;flex:1"><b>${COMPETITORS[id].name}</b><span class="tiny muted">${CH.compDesc[id]}</span></div><b class="num">${fmt(CH.compStart[id])}</b></div>`).join("")}
       <div class="card row">${compAvatar("you")}<div class="stack" style="gap:0;flex:1"><b>Lindenhain Aktuell</b><span class="tiny muted">Das bist du</span></div><b class="num">${fmt(run.followers)}</b></div>
     </section>
     <section class="stack"><h2 class="label">Deine drei Werte</h2>${hud(run)}
       <ul class="signs small">
-        <li><b>Follower</b> sind dein Ziel. Zwischenziele: ${MILESTONES.map(fmt).join(", ")}.</li>
+        <li><b>Follower</b> sind dein Ziel. Zwischenziele: ${CH.milestones.map(fmt).join(", ")}.</li>
         <li><b>Glaubwürdigkeit</b> bestimmt, wie oft man dich teilt. Wer beim Übertreiben erwischt wird, verliert Reichweite.</li>
         <li><b>Spaltung</b> zeigt, was deine Beiträge mit der Stadt machen.</li>
       </ul>
@@ -431,7 +481,7 @@ function vDay() {
       fb = `<div class="fb ${o.tier === "fair" ? "good" : o.tier === "plump" ? "bad" : ""}" role="status">${fxChips(S.fx)}<p>${esc(o.fb)}</p></div>`;
       if (!lastDec) fb += `<button class="btn" data-a="nextDec">Weiter</button>`;
     }
-    const msg = dec.message ? `<div class="comment">${face(dec.message.who, 36)}<div class="bubble"><b>${PEOPLE[dec.message.who].name} · private Nachricht</b>${esc(dec.message.text)}</div></div>` : "";
+    const msg = dec.message ? `<div class="comment">${face(dec.message.who, 36)}<div class="bubble"><b>${PEOPLE[dec.message.who].name} · ${dec.message.label || "private Nachricht"}</b>${esc(dec.message.text)}</div></div>` : "";
     decisionHTML = `${msg}<div class="stack" style="gap:4px">${first ? "" : `<span class="kicker">Tag ${day.n} · ${esc(day.title)}</span>`}<h2 class="head" style="font-size:21px;line-height:1.3">${esc(dec.q)}</h2></div>
       <div class="stack">${opts}</div>${fb}`;
   }
@@ -468,9 +518,9 @@ function verdictText(n) {
 
 function vWeek() {
   const run = S.run;
-  const n = stars(run.followers);
+  const n = stars(CH, run.followers);
   const rank = ranking(run).findIndex(x => x.id === "you") + 1;
-  const next = STAR_LIMITS.find(l => run.followers < l);
+  const next = CH.starLimits.find(l => run.followers < l);
   return `<main class="screen fade">
     ${chapterTop("Wochenbilanz")}
     <div class="stack" style="gap:2px"><span class="kicker">Tag 7</span><h1 class="head" style="font-size:28px">Wochenbilanz</h1></div>
@@ -482,14 +532,14 @@ function vWeek() {
       ${next ? `<p class="tiny muted">Für den nächsten Stern hätten ${fmt(next)} Follower gereicht.</p>` : ""}
     </section>
     <section class="stack"><h2 class="label">Zwischenziele</h2>
-      <div class="chips">${MILESTONES.map(m => `<span class="chip ${run.milestones.includes(m) ? "up" : "zero"}">${run.milestones.includes(m) ? "✓" : "○"} ${fmt(m)}</span>`).join("")}</div></section>
+      <div class="chips">${CH.milestones.map(m => `<span class="chip ${run.milestones.includes(m) ? "up" : "zero"}">${run.milestones.includes(m) ? "✓" : "○"} ${fmt(m)}</span>`).join("")}</div></section>
     ${rankingHTML(run, "Endstand")}
     <section class="card stack"><h2 class="label">Stimmung in Lindenhain</h2>
-      ${pollBar(poll(START.split), "Vor einer Woche")}${pollBar(poll(run.split), "Heute")}
-      <p class="tiny muted">${poll(START.split).undecided - poll(run.split).undecided >= 10 ? "Die Unentschiedenen sind deutlich weniger geworden. Wer jetzt eine feste Meinung hat, hat sie oft aus deinem Feed." : "Viele sind noch unentschieden und wollen mehr wissen."}</p>
+      ${pollBar(poll(CH.start.split), "Vor einer Woche")}${pollBar(poll(run.split), "Heute")}
+      <p class="tiny muted">${poll(CH.start.split).undecided - poll(run.split).undecided >= 10 ? "Die Unentschiedenen sind deutlich weniger geworden. Wer jetzt eine feste Meinung hat, hat sie oft aus deinem Feed." : "Viele sind noch unentschieden und wollen mehr wissen."}</p>
     </section>
     <section class="card stack"><h2 class="label">Was die Woche verändert hat</h2>
-      ${statuses(run).map(s => `<div class="row" style="align-items:flex-start">${face(s.who, 36)}<div class="stack" style="gap:0"><b class="small">${PEOPLE[s.who].name}</b><span class="small">${esc(s.text)}</span></div></div>`).join("")}
+      ${CH.statuses(run).map(s => `<div class="row" style="align-items:flex-start">${face(s.who, 36)}<div class="stack" style="gap:0"><b class="small">${PEOPLE[s.who].name}</b><span class="small">${esc(s.text)}</span></div></div>`).join("")}
     </section>
     <button class="btn" data-a="toDebrief">Was steckt dahinter?</button>
   </main>`;
@@ -511,7 +561,7 @@ function vDebrief() {
     <section class="card accent stack"><h2 class="label">Deine Gegenfrage</h2><p class="q">${e.question}</p></section>
     <section class="card stack"><h2 class="label">Deine Woche</h2>
       <p class="small">${cnt("subtil")}× subtil, ${cnt("plump")}× plump, ${cnt("fair")}× fair.</p>
-      <p class="small muted">Die meisten Follower bringen die subtilen Varianten: Sie wirken, ohne aufzufallen. Genau deshalb sind sie im Alltag am schwersten zu erkennen.</p>
+      <p class="small muted">${CH.insight}</p>
       ${mine}</section>
     <button class="btn" data-a="toTest">Zum Mini-Test</button>
   </main>`;
@@ -549,9 +599,9 @@ function vTest() {
 
 function vFinal() {
   const run = S.run;
-  const n = stars(run.followers);
+  const n = stars(CH, run.followers);
   return `<main class="screen fade">
-    ${chapterTop("Kapitel 1 geschafft")}
+    ${chapterTop(`Kapitel ${CH.n} geschafft`)}
     <div class="town-frame" style="height:210px">${townSVG({ theme, lightsOff: run.split >= 40, label: "Lindenhain am Ende der Woche" })}</div>
     <section class="two">
       <div class="card stack" style="align-items:center;text-align:center;gap:6px"><span class="label">Auftrag</span>${starsHTML(n, 20)}<span class="small">${fmt(run.followers)} Follower</span></div>
@@ -559,8 +609,8 @@ function vFinal() {
     </section>
     <p class="small muted">Die Sterne zeigen, wie gut du manipuliert hast. Worauf es im Alltag ankommt, ist die rechte Zahl.</p>
     <div class="card row">${icon("book", 20)}<span class="small">Neu im Wissen: <b>${CH.technique}</b></span></div>
-    <button class="btn" data-a="leave">Zurück nach Lindenhain</button>
-    <button class="btn ghost" data-a="startChapter">Kapitel nochmal spielen</button>
+    ${(() => { const i = CHAPTERS.indexOf(CH); const nx = CHAPTERS[i + 1]; return nx ? `<button class="btn" data-a="startChapter" data-v="${nx.id}">Weiter zu Kapitel ${nx.n}: ${esc(nx.title)}</button><button class="btn ghost" data-a="leave">Zurück nach Lindenhain</button>` : `<button class="btn" data-a="leave">Zurück nach Lindenhain</button>`; })()}
+    <button class="btn ghost" data-a="startChapter" data-v="${CH.id}">Kapitel nochmal spielen</button>
   </main>`;
 }
 
@@ -593,7 +643,7 @@ function toast(milestones) {
 function beginDay(idx) {
   S.day = idx; S.dec = 0; S.picked = null; S.fx = null;
   S.prev = { followers: S.run.followers, trust: S.run.trust, split: S.run.split };
-  S.dayState = startDay(S.run, idx);
+  S.dayState = startDay(S.run, CH, idx);
   const t = document.getElementById("toast"); if (t) t.classList.remove("show");
   render();
   toast(S.dayState.events.flatMap(e => (e.fx && e.fx.reached) || []));
@@ -611,7 +661,7 @@ const actions = {
     if (!confirmReset) { confirmReset = true; render(false); return; }
     store.progress = structuredClone(DEFAULT.progress); save(); confirmReset = false; render();
   },
-  startChapter() { startChapter(); render(); markFocus(); },
+  startChapter(v) { startChapter(v); render(); markFocus(); },
   leave() { const t = document.getElementById("toast"); if (t) t.classList.remove("show"); S = { view: "menu", tab: "play" }; render(); },
   nextLine() {
     if (S.line < CH.scene.length - 1) { S.line++; render(false); markFocus(); }
@@ -632,7 +682,7 @@ const actions = {
   },
   nextDec() { S.dec++; S.picked = null; S.fx = null; render(); },
   endDay() {
-    endDay(S.run, S.day);
+    endDay(S.run, CH, S.day);
     if (S.day < CH.days.length - 1) beginDay(S.day + 1);
     else { S.phase = "week"; render(); }
   },
@@ -650,7 +700,7 @@ const actions = {
     store.progress.chapters[CH.id] = {
       done: true,
       vals: { followers: S.run.followers, trust: S.run.trust, split: S.run.split },
-      stars: Math.max(prev.stars || 0, stars(S.run.followers)),
+      stars: Math.max(prev.stars || 0, stars(CH, S.run.followers)),
       best: Math.max(prev.best || 0, S.score),
     };
     if (!store.progress.learned.includes(CH.technique)) store.progress.learned.push(CH.technique);
