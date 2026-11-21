@@ -330,7 +330,7 @@ function vScene() {
   const label = CH.type === "story" ? CH.title : `Kampagne ${CH.campaign} · Kapitel ${CH.n}`;
   return `<main class="screen ${S.line === 0 ? "fade" : ""}">
     ${chapterTop(label)}
-    <div class="town-frame scene-town">${townSVG({ theme: sceneTheme(), animate: S.line === 0, focusables: CH.focusables || [], lightsOff: CH.lightsOff && CH.lightsOff(store.progress), label: "Lindenhain: Szene" })}</div>
+    <div class="town-frame scene-town">${townSVG({ theme: sceneTheme(), animate: S.line === 0, focusables: CH.focusables || [], lightsOff: CH.lightsOff && CH.lightsOff(store.progress, CHAPTERS), label: "Lindenhain: Szene" })}</div>
     <div class="card subtitle" aria-live="polite">
       <span class="who">${esc(l.who)}</span>
       <p class="line">${esc(l.text)}</p>
@@ -469,7 +469,7 @@ function climateCard(before, now) {
   const word = v => v < 25 ? "sachlich" : v < 40 ? "angespannt" : v < 55 ? "gereizt" : "vergiftet";
   const bar = (v, l) => `<div class="stack" style="gap:6px"><div class="row between tiny"><span class="muted">${l}</span><span>${word(v)}</span></div><div class="bar"><i style="width:${v}%;background:var(--warn)"></i></div></div>`;
   return `<section class="card stack"><h2 class="label">Gesprächsklima in Lindenhain</h2>${bar(before, "Vorher")}${bar(now, "Jetzt")}
-    <p class="tiny muted">${now - before >= 12 ? "Man redet übereinander statt miteinander. Das bleibt, auch wenn dieser Wahlkampf vorbei ist." : now <= before ? "Es wird hart gestritten – aber über Sachen." : "Der Ton ist rauer geworden."}</p></section>`;
+    <p class="tiny muted">${now - before >= 12 ? "Man redet übereinander statt miteinander. Das bleibt – auch nach dieser Woche." : now <= before ? "Es wird hart gestritten – aber über Sachen." : "Der Ton ist rauer geworden."}</p></section>`;
 }
 
 const VERDICT = ["Kaum jemand hat dich bemerkt.", "Ein Anfang, aber die Stadt schaut auf andere.", "Ordentlich für eine Woche.", "Stark. Man kennt dich in Lindenhain.", "Herausragend. Ganz Lindenhain redet über dich."];
@@ -563,7 +563,9 @@ function nextChapterButton() {
   const i = CHAPTERS.indexOf(CH);
   const nx = CHAPTERS[i + 1];
   if (!nx) return `<button class="btn" data-a="leave">Zurück nach Lindenhain</button>`;
-  const label = nx.type === "story" ? nx.title : `Kapitel ${nx.n}: ${nx.title}`;
+  const label = nx.type === "story" ? nx.title
+    : nx.campaign !== CH.campaign ? `Kampagne ${nx.campaign}, Kapitel ${nx.n}: ${nx.title}`
+    : `Kapitel ${nx.n}: ${nx.title}`;
   return `<button class="btn" data-a="startChapter" data-v="${nx.id}">Weiter: ${esc(label)}</button><button class="btn ghost" data-a="leave">Zurück nach Lindenhain</button>`;
 }
 
@@ -592,7 +594,7 @@ function vStory() {
     <div class="stack" style="gap:2px"><span class="kicker">${esc(CH.kicker || "Bilanz")}</span><h1 class="head" style="font-size:28px">${esc(CH.title)}</h1></div>
     <div class="town-frame" style="height:230px">${townSVG({ theme: sceneTheme(), lightsOff: sum.lightsOff, label: "Lindenhain" })}</div>
     ${sum.lead ? `<p style="font-size:18px;line-height:1.5">${esc(sum.lead)}</p>` : ""}
-    ${sum.stats ? `<div class="two">${sum.stats.map(s => `<div class="card stack" style="align-items:center;text-align:center;gap:4px"><span class="label">${esc(s.label)}</span><div class="big" style="font-size:28px">${esc(s.value)}</div>${s.sub ? `<span class="tiny muted">${esc(s.sub)}</span>` : ""}</div>`).join("")}</div>` : ""}
+    ${sum.stats ? `<div class="stat-grid">${sum.stats.map(s => `<div class="card stack" style="align-items:center;text-align:center;gap:4px"><span class="label">${esc(s.label)}</span><div class="big" style="font-size:28px">${esc(s.value)}</div>${s.sub ? `<span class="tiny muted">${esc(s.sub)}</span>` : ""}</div>`).join("")}</div>` : ""}
     ${sum.people ? `<section class="card stack"><h2 class="label">${esc(sum.peopleTitle || "Die Menschen in Lindenhain")}</h2>
       ${sum.people.map(s => { const sp = speaker(s.who); return `<div class="row" style="align-items:flex-start">${sp.av}<div class="stack" style="gap:0"><b class="small">${esc(sp.name)}</b><span class="small">${esc(s.text)}</span></div></div>`; }).join("")}</section>` : ""}
     ${sum.closing ? `<section class="card accent stack"><p>${esc(sum.closing)}</p></section>` : ""}
@@ -605,6 +607,10 @@ function vStory() {
    ============================================================ */
 function render(scrollTop = true) {
   const app = document.getElementById("app");
+  // Gesamtbilanz immer im Abendlicht, Epilog immer bei Tag
+  const shown = (S.view === "chapter" && CH.forceTheme) || theme;
+  document.documentElement.dataset.theme = shown;
+  setArtTheme(shown);
   app.innerHTML = S.view === "menu" ? vMenu() : vChapter();
   if (scrollTop) window.scrollTo({ top: 0 });
 }

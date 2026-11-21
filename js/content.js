@@ -5,7 +5,7 @@ export const CAMPAIGNS = [
   { n: 1, title: "Der Account", when: "Frühjahr", place: "cafe", teaser: "Eine Woche, ein Streitthema, zwei Konkurrenten.", chapters: 5 },
   { n: 2, title: "Die Kandidatur", when: "Zwei Jahre später", place: "rathaus", chapters: 5 },
   { n: 3, title: "Die Deutungshoheit", when: "Ein Jahr später", place: "verlag", chapters: 5 },
-  { n: 4, title: "Der unsichtbare Einfluss", when: "Im Herbst darauf", place: "funkturm", chapters: 5 },
+  { n: 4, title: "Der unsichtbare Einfluss", when: "Im Herbst darauf", place: "funkturm", chapters: 4 },
   { n: "Bilanz", title: "Was aus Lindenhain wurde", when: "Am selben Abend", bilanz: true },
   { n: 5, title: "Die Verteidigung", when: "Ein neuer Morgen", place: "buergerhaus", chapters: 5 },
 ];
@@ -29,6 +29,7 @@ export const TECHNIQUES = [
   { campaign: 2, list: ["Strohmann", "Whataboutism", "Falsches Dilemma", "Angriff auf die Person", "Sündenbock"] },
   { campaign: 3, list: ["Rosinenpicken", "Irreführende Diagramme", "Framing", "„Ich stelle ja nur Fragen“", "Falsche Ausgewogenheit"] },
   { campaign: 4, list: ["Vorgetäuschte Bürgerbewegung", "Fake-Accounts", "Scheinbar unabhängige Nachrichtenseiten", "KI-Fälschungen"] },
+  { campaign: 5, title: "Kampagne 5 · Werkzeuge dagegen", list: ["Vorwarnen", "Quellen prüfen", "Gespräche statt Lager", "Gemeinsam prüfen"] },
 ];
 
 export const CHAPTER1 = {

@@ -229,3 +229,5 @@ ul.signs li::before { content: ""; position: absolute; left: 3px; top: .62em; wi
 .grid-opts { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }
 .grid-opts .choice { font-size: 14px; padding: 8px; }
 .opt .photo svg { display: block; width: 100%; height: auto; border-radius: 8px; }
+.stat-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(140px, 1fr)); gap: 10px; }
+.stat-grid .big { font-size: 24px !important; }
