@@ -464,6 +464,14 @@ function pollBar(p, label) {
     <div class="row between tiny" style="white-space:nowrap"><span>${L.a} ${p.sideA} %</span><span class="muted">offen ${p.undecided} %</span><span>${L.b} ${p.sideB} %</span></div></div>`;
 }
 
+// Gesprächsklima statt Umfrage – für Kampagnen ohne Abstimmungsfrage
+function climateCard(before, now) {
+  const word = v => v < 25 ? "sachlich" : v < 40 ? "angespannt" : v < 55 ? "gereizt" : "vergiftet";
+  const bar = (v, l) => `<div class="stack" style="gap:6px"><div class="row between tiny"><span class="muted">${l}</span><span>${word(v)}</span></div><div class="bar"><i style="width:${v}%;background:var(--warn)"></i></div></div>`;
+  return `<section class="card stack"><h2 class="label">Gesprächsklima in Lindenhain</h2>${bar(before, "Vorher")}${bar(now, "Jetzt")}
+    <p class="tiny muted">${now - before >= 12 ? "Man redet übereinander statt miteinander. Das bleibt, auch wenn dieser Wahlkampf vorbei ist." : now <= before ? "Es wird hart gestritten – aber über Sachen." : "Der Ton ist rauer geworden."}</p></section>`;
+}
+
 const VERDICT = ["Kaum jemand hat dich bemerkt.", "Ein Anfang, aber die Stadt schaut auf andere.", "Ordentlich für eine Woche.", "Stark. Man kennt dich in Lindenhain.", "Herausragend. Ganz Lindenhain redet über dich."];
 
 function vWeek() {
@@ -485,10 +493,10 @@ function vWeek() {
     <section class="stack"><h2 class="label">Zwischenziele</h2>
       <div class="chips">${CH.milestones.map(m => `<span class="chip ${run.milestones.includes(m) ? "up" : "zero"}">${run.milestones.includes(m) ? "✓" : "○"} ${fmt(m)}</span>`).join("")}</div></section>
     ${rankingHTML(run, "Endstand")}
-    <section class="card stack"><h2 class="label">Stimmung in Lindenhain${CH.pollTopic ? " · " + esc(CH.pollTopic) : ""}</h2>
+    ${CH.pollLabels ? `<section class="card stack"><h2 class="label">Stimmung in Lindenhain${CH.pollTopic ? " · " + esc(CH.pollTopic) : ""}</h2>
       ${pollBar(before, "Vorher")}${pollBar(now, "Jetzt")}
       <p class="tiny muted">${before.undecided - now.undecided >= 10 ? "Die Unentschiedenen sind deutlich weniger geworden. Wer jetzt eine feste Meinung hat, hat sie oft von dir." : "Viele sind noch unentschieden und wollen mehr wissen."}</p>
-    </section>
+    </section>` : climateCard(CH.start.split, run.split)}
     <section class="card stack"><h2 class="label">Was sich verändert hat</h2>
       ${CH.statuses(run).map(s => { const sp = speaker(s.who); return `<div class="row" style="align-items:flex-start">${sp.av}<div class="stack" style="gap:0"><b class="small">${esc(sp.name)}</b><span class="small">${esc(s.text)}</span></div></div>`; }).join("")}
     </section>
