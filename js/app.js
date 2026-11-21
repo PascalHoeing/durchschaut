@@ -266,7 +266,7 @@ function vFortschritt() {
     return `<section class="stack"><h2 class="label">Kampagne ${c.n} · ${esc(c.title)}</h2>
       ${items.map(x => { const st = chapterState(x); return `<div class="card stack" style="gap:8px">
         <div class="row between"><b class="small">${x.n}. ${esc(x.title)}</b>${starsHTML(st.stars || 1, 14)}</div>
-        <div class="row between tiny"><span class="muted">${esc(x.technique)}</span><span>Test ${st.best}/${x.test.length}</span></div></div>`; }).join("")}</section>`;
+        <div class="row between tiny"><span class="muted">${esc(x.technique)}</span><span style="white-space:nowrap;margin-left:8px">Test ${st.best}/${x.test.length}</span></div></div>`; }).join("")}</section>`;
   }).join("");
   return `<header class="stack" style="gap:4px"><h1 class="head" style="font-size:26px">Fortschritt</h1><p class="muted small">${played.length} von ${playable.length} Kapiteln gespielt</p></header>
     <div class="two">
