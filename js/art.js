@@ -86,6 +86,26 @@ export function photo(kind) {
       + `<path d="M236 92 L270 150 L232 150Z" fill="#3A3F48"/><path d="M240 120 h22 M242 130 h18" stroke="#3B6A8A" stroke-width="5" stroke-linecap="round" opacity="0.8"/>`
       + `<rect width="320" height="170" fill="url(#vgt)"/><defs><radialGradient id="vgt" cx="50%" cy="55%" r="70%"><stop offset="45%" stop-color="#000" stop-opacity="0"/><stop offset="100%" stop-color="#000" stop-opacity="0.7"/></radialGradient></defs></svg>`;
   }
+  if (kind === "hallgreen") {
+    // enger Ausschnitt: nur die Reihe mit den Garten-Schildern
+    let g = "";
+    for (let i = 0; i < 7; i++) {
+      const x = 30 + i * 44, y = 96;
+      g += `<rect x="${x - 15}" y="${y + 10}" width="30" height="62" rx="12" fill="${["#5E9A7A", "#8A7A6A", "#4C6496"][i % 3]}"/><circle cx="${x}" cy="${y}" r="12" fill="${["#C9CCD4", "#3A2E2A", "#8A6A4A"][i % 3]}"/>`;
+      if (i % 2 === 0) g += `<rect x="${x - 4}" y="${y - 52}" width="4" height="40" fill="#8A6A4A"/><rect x="${x - 22}" y="${y - 72}" width="40" height="26" rx="3" fill="#7FD1A8"/><text x="${x - 2}" y="${y - 55}" font-size="10" font-weight="700" font-family="Inter, sans-serif" fill="#16213A" text-anchor="middle">Garten</text>`;
+    }
+    return `<svg viewBox="0 0 320 170" role="img" aria-label="Bildausschnitt: Reihe mit Garten-Schildern"><rect width="320" height="170" fill="#E9E2D3"/>${g}</svg>`;
+  }
+  if (kind === "hallempty") {
+    let g = "";
+    for (let r = 0; r < 3; r++) for (let i = 0; i < 9; i++) {
+      const x = 24 + i * 34 + r * 6, y = 70 + r * 32;
+      g += `<rect x="${x - 10}" y="${y}" width="22" height="18" rx="3" fill="#9AA3B5"/><rect x="${x - 10}" y="${y - 14}" width="22" height="16" rx="3" fill="#B3BAC8"/>`;
+    }
+    g += `<rect x="102" y="84" width="20" height="36" rx="8" fill="#4C6496"/><circle cx="112" cy="78" r="8" fill="#C9CCD4"/>`;
+    g += `<rect x="218" y="116" width="20" height="36" rx="8" fill="#8A7A6A"/><circle cx="228" cy="110" r="8" fill="#3A2E2A"/>`;
+    return `<svg viewBox="0 0 320 170" role="img" aria-label="Fast leerer Saal mit Stuhlreihen"><rect width="320" height="170" fill="#D9D3C6"/><rect x="0" y="0" width="320" height="40" fill="#C9C1B0"/>${g}</svg>`;
+  }
   // voller Saal im Bürgerhaus
   let heads = "";
   for (let i = 0; i < 26; i++) {

@@ -431,8 +431,9 @@ function vDay() {
       if (!lastDec) fb += `<button class="btn" data-a="nextDec">Weiter</button>`;
     }
     const msg = dec.message ? bubble(dec.message.who, dec.message.text, dec.message.label) : "";
+    const img = dec.image ? `<div class="photo">${photo(dec.image)}</div>` : "";
     const ctx = dec.context ? `<div class="card small muted">${esc(dec.context)}</div>` : "";
-    decisionHTML = `${ctx}${msg}<div class="stack" style="gap:4px">${first ? "" : `<span class="kicker">Tag ${day.n} · ${esc(day.title)}</span>`}<h2 class="head" style="font-size:21px;line-height:1.3">${esc(dec.q)}</h2></div>
+    decisionHTML = `${msg}${img}${ctx}<div class="stack" style="gap:4px">${first ? "" : `<span class="kicker">Tag ${day.n} · ${esc(day.title)}</span>`}<h2 class="head" style="font-size:21px;line-height:1.3">${esc(dec.q)}</h2></div>
       <div class="stack">${dec.opts.map((o, i) => optionHTML(dec, o, i)).join("")}</div>${fb}`;
   }
 
