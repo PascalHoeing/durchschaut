@@ -52,7 +52,7 @@ export const CHAPTER1 = {
   title: "Eine Woche in Lindenhain",
   technique: "Emotionalisierung",
   scene: [
-    { who: "Erzähler", text: "Lindenhain, im Frühjahr. 14.000 Einwohner, ein Marktplatz und eine Bäckerei, die jeder kennt.", focus: null },
+    { who: "Erzähler", text: "Lindenhain, im Frühjahr. 24.000 Einwohner, ein Marktplatz und eine Bäckerei, die jeder kennt.", focus: null },
     { who: "Erzähler", text: "Auf der letzten freien Fläche soll etwas Neues entstehen: ein Skatepark oder ein Seniorengarten. Im Herbst entscheiden die Bürger.", focus: "lot" },
     { who: "Erzähler", text: "Gestern Abend war im Bürgerhaus der erste Infoabend. Rund 80 Leute kamen. Die Stimmung war lebhaft, aber freundlich.", focus: "buergerhaus" },
     { who: "Erzähler", text: "Die Fakten: Der Skatepark kostet 180.000 Euro, der Garten 95.000. Laut Lärmgutachten werden die Grenzwerte eingehalten. Geöffnet wäre bis 22 Uhr.", focus: "lot" },

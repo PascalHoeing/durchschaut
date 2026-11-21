@@ -724,3 +724,8 @@ document.addEventListener("click", e => {
 });
 
 render();
+
+// Offline-Fähigkeit: Nach dem ersten Besuch läuft das Spiel auch ohne Netz.
+if ("serviceWorker" in navigator) {
+  window.addEventListener("load", () => navigator.serviceWorker.register("sw.js").catch(() => {}));
+}
