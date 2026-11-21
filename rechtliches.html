@@ -5,7 +5,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <meta name="theme-color" content="#141B2D">
 <meta name="robots" content="noindex">
-<title>Impressum und Datenschutz – Durchschaut</title>
+<title>Impressum und Datenschutzerklärung – Durchschaut</title>
 <link rel="icon" type="image/png" sizes="32x32" href="icons/favicon-32.png">
 <link rel="stylesheet" href="css/app.css">
 <style>
@@ -29,7 +29,7 @@
 <main class="screen legal">
   <div><a class="pill" href="./">← Zurück zum Spiel</a></div>
 
-  <section class="card stack">
+  <section class="card stack" id="impressum">
     <h1 class="head" style="font-size:26px">Impressum</h1>
     <p class="tiny muted">Angaben gemäß § 5 Digitale-Dienste-Gesetz (DDG)</p>
     <p>
@@ -44,33 +44,50 @@
     <p class="small">Durchschaut ist ein kostenloses Lernspiel. Alle Orte, Personen, Organisationen, Accounts und Meldungen im Spiel sind frei erfunden. Ähnlichkeiten mit realen Personen oder Organisationen sind nicht beabsichtigt.</p>
   </section>
 
-  <section class="card stack">
-    <h1 class="head" style="font-size:26px">Datenschutz</h1>
-    <p class="small"><b>Kurz gesagt:</b> Durchschaut hat keine Nutzerkonten, keine Werbung, kein Tracking und keine Cookies. Dein Spielstand bleibt auf deinem Gerät.</p>
+  <section class="card stack" id="datenschutz">
+    <h1 class="head" style="font-size:26px">Datenschutzerklärung</h1>
+    <p class="small"><b>Kurz gesagt:</b> Durchschaut hat keine Nutzerkonten, keine Werbung, kein Tracking, keine Analyse und keine Cookies. Dein Spielstand bleibt auf deinem Gerät. Wir selbst erhalten keine Daten über dich – nur der Hosting-Anbieter verarbeitet beim Aufruf der Web-Version technisch notwendige Daten.</p>
 
     <h2>1. Verantwortlicher</h2>
-    <p class="small">Verantwortlich für die Datenverarbeitung ist die im Impressum genannte Person.</p>
+    <p class="small">Verantwortlich im Sinne der Datenschutz-Grundverordnung (DSGVO) ist die im <a href="#impressum">Impressum</a> genannte Person. Du erreichst sie für alle Fragen zum Datenschutz unter der dort angegebenen E-Mail-Adresse.</p>
 
-    <h2>2. Dein Spielstand</h2>
-    <p class="small">Fortschritt und Einstellungen (zum Beispiel gespielte Kapitel, Sterne, Testergebnisse und die gewählte Tageszeit) werden nur im lokalen Speicher deines Browsers bzw. deines Geräts abgelegt („localStorage“). Diese Daten werden nicht an uns oder Dritte übertragen. Du kannst sie jederzeit in den Einstellungen des Spiels („Fortschritt zurücksetzen“) oder über die Einstellungen deines Browsers löschen.</p>
-    <p class="small">Für die Offline-Nutzung speichert dein Browser die Dateien des Spiels in einem Zwischenspeicher. Dabei werden keine personenbezogenen Daten erhoben.</p>
+    <h2>2. Dein Spielstand auf deinem Gerät</h2>
+    <p class="small">Damit du später weiterspielen kannst, speichert das Spiel deinen Fortschritt und deine Einstellungen im lokalen Speicher deines Browsers bzw. deines Geräts („localStorage“). Gespeichert werden: gespielte Kapitel, Sterne, Ergebnisse der Mini-Tests, deine letzten Spielwerte, die freigeschalteten Techniken und die gewählte Tageszeit-Einstellung.</p>
+    <p class="small">Diese Daten verlassen dein Gerät nicht. Sie werden weder an uns noch an Dritte übertragen, und wir können sie nicht einsehen. Die Speicherung ist unbedingt erforderlich, damit das Spiel die von dir gewünschte Funktion „Weiterspielen“ erfüllen kann (§ 25 Abs. 2 Nr. 2 TDDDG). Du kannst die Daten jederzeit löschen: im Spiel unter Einstellungen → „Fortschritt zurücksetzen“ oder über die Einstellungen deines Browsers bzw. durch Deinstallieren der App.</p>
 
-    <h2>3. Hosting der Web-Version</h2>
-    <p class="small">Die Web-Version wird über GitHub Pages bereitgestellt, einen Dienst der GitHub Inc., 88 Colin P. Kelly Jr. Street, San Francisco, CA 94107, USA. Beim Aufruf der Seite verarbeitet GitHub technisch notwendige Daten, insbesondere deine IP-Adresse, Datum und Uhrzeit des Zugriffs sowie Browser-Informationen, um die Seite auszuliefern und die Sicherheit des Dienstes zu gewährleisten. Rechtsgrundlage ist Art. 6 Abs. 1 lit. f DSGVO; unser berechtigtes Interesse liegt in der zuverlässigen Bereitstellung des Spiels. Dabei kann eine Übermittlung in die USA stattfinden. <span class="ph">[Vor Veröffentlichung prüfen: aktuelle Grundlage der Übermittlung, z. B. EU-US Data Privacy Framework, und Verweis auf die Datenschutzerklärung von GitHub.]</span></p>
+    <h2>3. Offline-Nutzung</h2>
+    <p class="small">Damit das Spiel auch ohne Internetverbindung läuft, legt dein Browser die Dateien des Spiels (Texte, Grafiken, Programmcode) in einem Zwischenspeicher auf deinem Gerät ab („Service Worker“). Dabei werden keine personenbezogenen Daten gespeichert oder übertragen. Auch diese Speicherung ist für die von dir genutzte Funktion unbedingt erforderlich (§ 25 Abs. 2 Nr. 2 TDDDG). Du kannst den Zwischenspeicher über die Website-Einstellungen deines Browsers löschen.</p>
 
-    <h2>4. Schriften und externe Inhalte</h2>
-    <p class="small">Das Spiel lädt keine Schriften, Bilder oder Skripte von fremden Servern. Alle Zeichnungen sind Teil der App.</p>
+    <h2>4. Hosting der Web-Version (GitHub Pages)</h2>
+    <p class="small">Die Web-Version wird über GitHub Pages bereitgestellt, einen Dienst der GitHub, Inc., 88 Colin P. Kelly Jr. Street, San Francisco, CA 94107, USA.</p>
+    <p class="small"><b>Welche Daten:</b> Wenn du die Seite aufrufst, verarbeitet GitHub technisch notwendige Verbindungsdaten. Dazu gehören insbesondere deine IP-Adresse, Datum und Uhrzeit des Abrufs, die aufgerufene Datei sowie Angaben zu Browser und Betriebssystem. Nach eigenen Angaben speichert GitHub die IP-Adressen von Besuchern einer GitHub-Pages-Seite zu Sicherheitszwecken.</p>
+    <p class="small"><b>Zweck und Rechtsgrundlage:</b> Die Verarbeitung ist nötig, um dir das Spiel auszuliefern und den Dienst vor Missbrauch und Angriffen zu schützen. Rechtsgrundlage ist Art. 6 Abs. 1 lit. f DSGVO. Unser berechtigtes Interesse liegt in einer sicheren und zuverlässigen Bereitstellung des Spiels ohne eigenen Server.</p>
+    <p class="small"><b>Übermittlung in die USA:</b> Dabei können Daten in die USA übermittelt werden. Für die USA besteht ein Angemessenheitsbeschluss der Europäischen Kommission (EU-US Data Privacy Framework, Art. 45 DSGVO), an dem GitHub teilnimmt. Ergänzend setzt GitHub Standardvertragsklauseln der EU-Kommission ein.</p>
+    <p class="small"><b>Speicherdauer:</b> Wie lange GitHub diese Daten aufbewahrt, legt GitHub fest. Wir haben auf diese Protokolle keinen Zugriff. Einzelheiten findest du in der <a href="https://docs.github.com/de/site-policy/privacy-policies/github-general-privacy-statement" rel="noopener" target="_blank">Datenschutzerklärung von GitHub</a>.</p>
 
-    <h2>5. App-Versionen und freiwillige Unterstützung</h2>
-    <p class="small"><span class="ph">[Ergänzen, sobald die Store-Versionen erscheinen: Verarbeitung durch Google Play bzw. den Apple App Store beim Herunterladen und bei freiwilligen In-App-Käufen (Trinkgeld). Die Zahlungsabwicklung erfolgt ausschließlich durch den jeweiligen Store; wir erhalten keine Zahlungsdaten.]</span></p>
+    <h2>5. Keine Cookies, kein Tracking, keine fremden Inhalte</h2>
+    <p class="small">Das Spiel setzt keine Cookies, nutzt keine Analyse- oder Werbedienste und bindet keine Inhalte von fremden Servern ein – keine Schriften, keine Bilder, keine Videos, keine Skripte. Alle Zeichnungen und Grafiken sind Teil des Spiels. Links zu anderen Seiten (etwa zur Datenschutzerklärung von GitHub) werden erst geöffnet, wenn du sie antippst; dann gilt die Datenschutzerklärung der jeweiligen Seite.</p>
 
-    <h2>6. Deine Rechte</h2>
-    <p class="small">Du hast das Recht auf Auskunft, Berichtigung, Löschung, Einschränkung der Verarbeitung, Datenübertragbarkeit und Widerspruch (Art. 15–21 DSGVO). Da wir selbst keine personenbezogenen Daten von dir speichern, betreffen diese Rechte in der Praxis vor allem die Verarbeitung durch den Hosting-Anbieter. Du kannst dich außerdem bei einer Datenschutz-Aufsichtsbehörde beschweren, zum Beispiel bei der Behörde deines Wohnorts.</p>
+    <h2>6. Kontakt per E-Mail</h2>
+    <p class="small">Wenn du uns eine E-Mail schreibst, verarbeiten wir deine E-Mail-Adresse, deinen Namen (falls angegeben) und den Inhalt deiner Nachricht, um dir zu antworten. Rechtsgrundlage ist Art. 6 Abs. 1 lit. f DSGVO; unser berechtigtes Interesse ist die Beantwortung deiner Anfrage. Betrifft deine Anfrage einen Vertrag, ist Rechtsgrundlage Art. 6 Abs. 1 lit. b DSGVO. Wir löschen deine Nachricht, sobald die Anfrage erledigt ist, es sei denn, gesetzliche Aufbewahrungspflichten stehen dem entgegen.</p>
 
-    <p class="tiny muted">Stand: <span class="ph">[Datum]</span></p>
+    <h2>7. Apps aus Google Play und dem App Store</h2>
+    <p class="small">Wenn du Durchschaut über Google Play (Google Ireland Limited, Gordon House, Barrow Street, Dublin 4, Irland) oder den Apple App Store (Apple Distribution International Ltd., Hollyhill Industrial Estate, Hollyhill, Cork, Irland) lädst, verarbeitet der jeweilige Store dafür Daten wie dein Nutzerkonto, Gerätedaten und Zeitpunkt des Downloads. Darauf haben wir keinen Einfluss; es gelten die Datenschutzbestimmungen des jeweiligen Stores. Die App selbst funktioniert wie die Web-Version: Dein Spielstand bleibt auf dem Gerät, es gibt keine Analyse und kein Tracking.</p>
+    <p class="small"><b>Freiwilliges Trinkgeld:</b> Das Spiel ist kostenlos. Wenn du in der App freiwillig ein Trinkgeld gibst, wickelt der jeweilige Store die Zahlung vollständig ab. Wir erhalten keine Zahlungsdaten wie Kontonummer oder Kartennummer, sondern nur zusammengefasste Verkaufsberichte des Stores. Rechtsgrundlage für die Abwicklung ist Art. 6 Abs. 1 lit. b DSGVO; zur Aufbewahrung von Abrechnungsunterlagen sind wir gesetzlich verpflichtet (Art. 6 Abs. 1 lit. c DSGVO).</p>
+
+    <h2>8. Deine Rechte</h2>
+    <p class="small">Du hast das Recht auf Auskunft (Art. 15 DSGVO), Berichtigung (Art. 16), Löschung (Art. 17), Einschränkung der Verarbeitung (Art. 18) und Datenübertragbarkeit (Art. 20). Wende dich dazu an die im Impressum genannte E-Mail-Adresse. Da wir selbst keine Spieldaten von dir speichern, können wir zu deinem Spielstand keine Auskunft geben – er liegt nur auf deinem Gerät.</p>
+    <p class="small"><b>Widerspruchsrecht:</b> Soweit eine Verarbeitung auf Art. 6 Abs. 1 lit. f DSGVO beruht, kannst du ihr aus Gründen, die sich aus deiner besonderen Situation ergeben, jederzeit widersprechen (Art. 21 DSGVO).</p>
+    <p class="small"><b>Beschwerderecht:</b> Du kannst dich bei einer Datenschutz-Aufsichtsbehörde beschweren, insbesondere in dem EU-Mitgliedstaat, in dem du wohnst oder arbeitest (Art. 77 DSGVO).</p>
+
+    <h2>9. Pflicht zur Bereitstellung, automatisierte Entscheidungen</h2>
+    <p class="small">Du musst uns keine Daten geben, um Durchschaut zu spielen. Es findet keine automatisierte Entscheidungsfindung und kein Profiling statt.</p>
+
+    <h2>10. Änderungen</h2>
+    <p class="small">Wenn sich das Spiel oder die rechtlichen Vorgaben ändern, passen wir diese Datenschutzerklärung an. Es gilt die jeweils hier veröffentlichte Fassung.</p>
+
+    <p class="tiny muted">Stand: 21. November 2026</p>
   </section>
-
-  <p class="tiny muted" style="text-align:center">Entwurf – vor der Veröffentlichung von einer fachkundigen Stelle prüfen lassen.</p>
 </main>
 </body>
 </html>
