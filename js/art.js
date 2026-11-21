@@ -131,11 +131,11 @@ export function chart(spec) {
   const ink = "#16213A", muted = "#4A5878", grid = "#D3DCE8";
   const y = v => T + (H - T - B) * (1 - (v - yMin) / (yMax - yMin));
   const n = vals.length, slot = (W - L - R) / n;
-  const fmtv = v => v.toLocaleString("de-DE");
+  const fmtv = v => v.toLocaleString("de-DE", { maximumFractionDigits: 1 });
   let g = `<rect width="${W}" height="${H}" fill="#FFFFFF"/>`;
   g += `<text x="${L}" y="18" font-size="11.5" font-weight="700" font-family="Inter, sans-serif" fill="${ink}">${spec.title}</text>`;
   // Achse und Hilfslinien
-  const ticks = [yMin, (yMin + yMax) / 2, yMax].map(v => Math.round(v));
+  const ticks = [yMin, (yMin + yMax) / 2, yMax].map(v => Math.round(v * 10) / 10);
   ticks.forEach(v => {
     g += `<line x1="${L}" x2="${W - R}" y1="${y(v)}" y2="${y(v)}" stroke="${grid}"/>`;
     g += `<text x="${L - 6}" y="${y(v) + 3.5}" font-size="9.5" font-family="Inter, sans-serif" fill="${muted}" text-anchor="end">${fmtv(v)}</text>`;
