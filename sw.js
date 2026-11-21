@@ -1,5 +1,5 @@
 // Offline-Speicher für Durchschaut. Wird von make_sw.py erzeugt – nicht von Hand ändern.
-const VERSION = "durchschaut-a0e565c1a4";
+const VERSION = "durchschaut-56e389e996";
 const FILES = [
   "./",
   "index.html",

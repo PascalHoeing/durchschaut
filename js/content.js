@@ -207,7 +207,7 @@ export function factcheckDecision(n) {
     opts: [
       { tier: "fair", text: "„Danke für die Hinweise, ich korrigiere das.“", f: -30 * n, t: 4 + 3 * n, s: -3,
         fb: "Ein paar Follower springen ab. Aber wer korrigiert, gewinnt Vertrauen – und Vertrauen bringt später Reichweite." },
-      { tier: "fair", text: "Nicht reagieren", f: -90 * n, t: -5 * n, s: 2,
+      { tier: "subtil", text: "Nicht reagieren", f: -90 * n, t: -5 * n, s: 2,
         fb: "Der Faktencheck wird geteilt, dein Schweigen fällt auf. Du verlierst Follower und Glaubwürdigkeit." },
       { tier: "plump", flag: "attacked", text: "„Die Rundschau will doch nur den Skatepark durchdrücken.“", f: 60, t: -14, s: 5,
         fb: "Deine Fans halten zu dir. Alle anderen sehen: Du gehst auf die Überbringerin los, statt auf die Fakten einzugehen." },
