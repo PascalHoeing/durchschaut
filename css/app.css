@@ -226,3 +226,6 @@ ul.signs li::before { content: ""; position: absolute; left: 3px; top: .62em; wi
   *, *::before, *::after { animation: none !important; transition: none !important; }
   .town .focus.on { opacity: .5; }
 }
+.grid-opts { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }
+.grid-opts .choice { font-size: 14px; padding: 8px; }
+.opt .photo svg { display: block; width: 100%; height: auto; border-radius: 8px; }

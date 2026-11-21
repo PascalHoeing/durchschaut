@@ -34,10 +34,16 @@ export const TECHNIQUES = [
 export const CHAPTER1 = {
   id: "k1-1", campaign: 1, n: 1,
   start: { followers: 120, trust: 60, split: 10 },
-  compStart: { live: 800, rundschau: 2400 },
-  compDesc: { live: "Reißerisch, wächst schnell", rundschau: "Lokalzeitung, wächst stetig" },
+  compStart: { a: 800, b: 2400 },
+  rivals: {
+    a: { name: "Lindenhain Live", initials: "LL", color: "#8a5a44", desc: "Reißerisch, wächst schnell" },
+    b: { name: "Lindenhainer Rundschau", initials: "RS", color: "#2f6b5f", desc: "Lokalzeitung, wächst stetig" },
+  },
+  you: { name: "Lindenhain Aktuell", initials: "LA" },
+  mainLabel: "Follower",
+  pollLabels: { a: "Skatepark", b: "Garten" },
   // Zuwachs der Konkurrenten je Tag (Tag 1 bis 6)
-  growth: { live: [190, 210, 200, 170, 280, 30], rundschau: [40, 50, 60, 110, 50, 90] },
+  growth: { a: [190, 210, 200, 170, 280, 30], b: [40, 50, 60, 110, 50, 90] },
   milestones: [250, 500, 1000, 2000],
   starLimits: [500, 800, 1100, 1400], // ab hier 2, 3, 4, 5 Sterne
   focusables: ["lot", "buergerhaus", "cafe"],
@@ -241,8 +247,8 @@ CHAPTER1.dynamic = {
   },
   ilse(run, fx) {
     const events = [];
-    const lost = Math.round(run.comp.live * 0.35);
-    run.comp.live -= lost;
+    const lost = Math.round(run.comp.a * 0.35);
+    run.comp.a -= lost;
     events.push({ who: "news", text: `Lindenhain Live verliert ${lost.toLocaleString("de-DE")} Follower.` });
     if (run.flags.sharedFake) events.push({ who: "you", text: "Du hattest die Meldung geteilt. Viele werfen dir vor, ein Gerücht verbreitet zu haben.", fx: fx(-200, -10, 0) });
     else if (run.flags.verified) events.push({ who: "you", text: "Deine Meldung von gestern wird jetzt überall zitiert: Du hattest zuerst nachgefragt.", fx: fx(90, 3, -1) });

@@ -8,9 +8,15 @@ export const CHAPTER2 = {
   title: "Das Bodengutachten",
   technique: "Clickbait",
   start: { followers: 800, trust: 60, split: 25 },
-  compStart: { live: 1200, rundschau: 2700 },
-  compDesc: { live: "Reißerisch, will dieselben Klicks", rundschau: "Neu mit Bezahlschranke, wächst langsam" },
-  growth: { live: [170, 190, 180, 150, 160, 40], rundschau: [30, 30, 40, 30, 40, 60] },
+  compStart: { a: 1200, b: 2700 },
+  rivals: {
+    a: { name: "Lindenhain Live", initials: "LL", color: "#8a5a44", desc: "Reißerisch, will dieselben Klicks" },
+    b: { name: "Lindenhainer Rundschau", initials: "RS", color: "#2f6b5f", desc: "Neu mit Bezahlschranke, wächst langsam" },
+  },
+  you: { name: "Lindenhain Aktuell", initials: "LA" },
+  mainLabel: "Follower",
+  pollLabels: { a: "Skatepark", b: "Garten" },
+  growth: { a: [170, 190, 180, 150, 160, 40], b: [30, 30, 40, 30, 40, 60] },
   milestones: [1000, 1500, 2000, 2500],
   starLimits: [1350, 1550, 1700, 1850],
   focusables: ["lot", "rathaus", "verlag", "cafe"],
@@ -142,8 +148,8 @@ export const CHAPTER2 = {
     },
     rat(run, fx) {
       const events = [];
-      const lost = Math.round(run.comp.live * 0.2);
-      run.comp.live -= lost;
+      const lost = Math.round(run.comp.a * 0.2);
+      run.comp.a -= lost;
       events.push({ who: "news", text: `Lindenhain Live hatte gepostet: „Freifläche verseucht – Abstimmung muss abgesagt werden!“ Nach der Sitzung ist klar: Das stimmt nicht. Live verliert ${lost.toLocaleString("de-DE")} Follower.` });
       if (run.flags.teaseAgain) events.push({ who: "you", text: "Deine angekündigte Enthüllung bleibt aus. In den Kommentaren fragen Leser, wo sie bleibt.", fx: fx(-120, -6, 0) });
       return {
