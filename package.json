@@ -1,0 +1,19 @@
+{
+  "name": "durchschaut",
+  "version": "1.0.0",
+  "private": true,
+  "description": "Durchschaut – Willkommen in Lindenhain. Ein Lernspiel gegen Desinformation.",
+  "scripts": {
+    "web": "node tools/copy-web.mjs",
+    "assets": "capacitor-assets generate --android --iconBackgroundColor \"#141B2D\" --iconBackgroundColorDark \"#141B2D\" --splashBackgroundColor \"#141B2D\" --splashBackgroundColorDark \"#141B2D\""
+  },
+  "dependencies": {
+    "@capacitor/android": "^8.0.0",
+    "@capacitor/app": "^8.0.0",
+    "@capacitor/core": "^8.0.0"
+  },
+  "devDependencies": {
+    "@capacitor/assets": "^3.0.5",
+    "@capacitor/cli": "^8.0.0"
+  }
+}

@@ -1,0 +1,15 @@
+{
+  "appId": "io.github.pascalhoeing.durchschaut",
+  "appName": "Durchschaut",
+  "webDir": "www",
+  "backgroundColor": "#141B2D",
+  "android": {
+    "backgroundColor": "#141B2D"
+  },
+  "plugins": {
+    "SystemBars": {
+      "insetsHandling": "css",
+      "style": "DARK"
+    }
+  }
+}

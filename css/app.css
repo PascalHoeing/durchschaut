@@ -1,3 +1,11 @@
+/* Sichere Ränder (Notch, Statusleiste, Gestenleiste). In der Android-App liefert Capacitor
+   --safe-area-inset-*, weil ältere WebViews env() falsch melden. */
+html {
+  --sat: var(--safe-area-inset-top, env(safe-area-inset-top, 0px));
+  --sab: var(--safe-area-inset-bottom, env(safe-area-inset-bottom, 0px));
+  --sal: var(--safe-area-inset-left, env(safe-area-inset-left, 0px));
+  --sar: var(--safe-area-inset-right, env(safe-area-inset-right, 0px));
+}
 :root, [data-theme="night"] {
   --bg: #141B2D; --surf: #1C2540; --surf2: #22304F; --ink: #E8ECF6; --muted: #AEB8D0; --line: #2E3A5C;
   --accent: #F2B84B; --accent-ink: #141B2D; --accent-text: #F2B84B; --accent-soft: rgba(242,184,75,0.16);
@@ -27,8 +35,8 @@ h1, h2, h3, p { margin: 0; }
 .head { font-family: "Space Grotesk", Inter, sans-serif; font-weight: 700; letter-spacing: -0.01em; }
 
 #app { max-width: 480px; margin: 0 auto; min-height: 100vh; min-height: 100dvh; display: flex; flex-direction: column; }
-.screen { flex: 1; display: flex; flex-direction: column; padding: max(20px, env(safe-area-inset-top)) 18px 28px; gap: 20px; }
-.screen.with-tabs { padding-bottom: 96px; }
+.screen { flex: 1; display: flex; flex-direction: column; padding: max(20px, var(--sat)) calc(18px + var(--sar)) calc(28px + var(--sab)) calc(18px + var(--sal)); gap: 20px; }
+.screen.with-tabs { padding-bottom: calc(96px + var(--sab)); }
 .stack { display: flex; flex-direction: column; gap: 12px; }
 .row { display: flex; gap: 10px; align-items: center; }
 .between { justify-content: space-between; }
@@ -172,7 +180,7 @@ ul.signs li::before { content: ""; position: absolute; left: 3px; top: .62em; wi
 /* Tabs */
 .tabs {
   position: fixed; left: 0; right: 0; bottom: 0; display: flex; justify-content: center;
-  background: var(--surf); border-top: 1px solid var(--line); padding-bottom: env(safe-area-inset-bottom);
+  background: var(--surf); border-top: 1px solid var(--line); padding-bottom: var(--sab);
 }
 .tabs .inner { display: flex; width: 100%; max-width: 480px; padding: 4px 6px 8px; }
 .tabs button {
@@ -213,7 +221,7 @@ ul.signs li::before { content: ""; position: absolute; left: 3px; top: .62em; wi
 
 /* Zwischenziel-Einblendung */
 .toast {
-  position: fixed; left: 50%; top: 12px; transform: translate(-50%, -140%); z-index: 20;
+  position: fixed; left: 50%; top: calc(12px + var(--sat)); transform: translate(-50%, -140%); z-index: 20;
   display: flex; gap: 8px; align-items: center; padding: 12px 16px; border-radius: 14px;
   background: var(--accent); color: var(--accent-ink); font-size: 15px; box-shadow: 0 6px 20px rgba(0,0,0,.25);
   transition: transform .35s cubic-bezier(.2,.8,.2,1), opacity .35s ease; width: max-content; max-width: calc(100% - 32px);

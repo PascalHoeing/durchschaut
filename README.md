@@ -33,8 +33,17 @@ Ein Lernspiel gegen Desinformation. Spielerinnen und Spieler wenden typische Man
 python3 tools/make_sw.py
 ```
 
+## Android-App
+
+Bei jeder Änderung am Spiel baut GitHub Actions automatisch die Android-App (Capacitor 8, Ziel-SDK 36) und legt sie unter **Releases** ab:
+
+- `…-play-store.aab` – signiert, für die Play Console (nur wenn die Secrets `ANDROID_KEYSTORE_BASE64`, `ANDROID_KEYSTORE_PASSWORD`, `ANDROID_KEY_ALIAS` hinterlegt sind)
+- `…-zum-Testen.apk` – zum direkten Installieren auf dem Handy
+
+Die Schritte stehen in `tools/build-android.sh`, das Protokoll des letzten Laufs im Zweig `build-logs`. App-ID: `io.github.pascalhoeing.durchschaut` (nicht mehr änderbar, sobald die App im Store ist). Die Version steht in `package.json`.
+
 ## Vor der Veröffentlichung offen
 
 - Impressum und Datenschutz ausfüllen und prüfen lassen
 - Trinkgeld: In-App-Käufe kommen mit den Store-Versionen; in der Web-Version ein Spendenlink
-- Store-Pakete: Android als Trusted Web Activity (z. B. mit Bubblewrap), iOS über einen Cloud-Build (z. B. Capacitor mit einem Mac-Build-Dienst) – beides braucht Werkzeuge außerhalb dieses Repos
+- iOS-Build über einen Mac-Server von GitHub Actions

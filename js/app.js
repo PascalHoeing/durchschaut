@@ -611,6 +611,7 @@ function render(scrollTop = true) {
   const shown = (S.view === "chapter" && CH.forceTheme) || theme;
   document.documentElement.dataset.theme = shown;
   setArtTheme(shown);
+  systemBars(shown);
   app.innerHTML = S.view === "menu" ? vMenu() : vChapter();
   if (scrollTop) window.scrollTo({ top: 0 });
 }
@@ -618,6 +619,17 @@ function render(scrollTop = true) {
 function scrollToEl(sel) {
   const el = document.querySelector(sel);
   if (el) el.scrollIntoView({ behavior: "smooth", block: "start" });
+}
+
+// Symbole der Statusleiste hell auf dunklem Grund (Abend) bzw. dunkel auf hellem Grund (Tag)
+let barsShown = null;
+function systemBars(t) {
+  if (t === barsShown) return;
+  barsShown = t;
+  try {
+    const SB = window.Capacitor && window.Capacitor.Plugins && window.Capacitor.Plugins.SystemBars;
+    if (SB) SB.setStyle({ style: t === "day" ? "LIGHT" : "DARK" }).catch(() => {});
+  } catch (e) { /* im Browser gibt es keine Statusleiste */ }
 }
 
 let toastTimer = null;
@@ -725,7 +737,22 @@ document.addEventListener("click", e => {
 
 render();
 
-// Offline-Fähigkeit: Nach dem ersten Besuch läuft das Spiel auch ohne Netz.
-if ("serviceWorker" in navigator) {
+// In der App (Android/iOS) sind alle Dateien schon auf dem Gerät – dort braucht es keinen Service Worker.
+const NATIVE = !!(window.Capacitor && window.Capacitor.isNativePlatform && window.Capacitor.isNativePlatform());
+
+// Offline-Fähigkeit im Browser: Nach dem ersten Besuch läuft das Spiel auch ohne Netz.
+if ("serviceWorker" in navigator && !NATIVE) {
   window.addEventListener("load", () => navigator.serviceWorker.register("sw.js").catch(() => {}));
+}
+
+// Zurück-Taste auf Android: aus einem Kapitel ins Menü, aus einem Reiter zu „Spielen“, sonst App schließen.
+if (NATIVE) {
+  const AppPlugin = window.Capacitor.Plugins && window.Capacitor.Plugins.App;
+  if (AppPlugin) {
+    AppPlugin.addListener("backButton", () => {
+      if (S.view === "chapter") actions.leave();
+      else if (S.tab !== "play") actions.tab("play");
+      else AppPlugin.exitApp();
+    });
+  }
 }
